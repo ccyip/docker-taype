@@ -22,7 +22,9 @@ RUN apt-get update -y -q \
     sudo \
     unzip \
     cmake \
-    libssl-dev
+    libssl-dev \
+    python3-pip \
+  && mkdir -p ~/.local/bin
 
 # Install opam
 RUN echo /usr/local/bin | \
@@ -84,3 +86,10 @@ RUN cd taype \
   && cabal update \
   && cabal build \
   && cabal run shake
+
+# Install python packages for ploting
+RUN pip install panda numpy seaborn jupyterlab
+
+EXPOSE 8888
+
+CMD ["/bin/bash", "--login"]
