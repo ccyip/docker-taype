@@ -1,5 +1,7 @@
 FROM debian:stable
 
+SHELL ["/bin/bash", "--login", "-o", "pipefail", "-c"]
+
 # Install system dependencies
 RUN apt-get update -y -q \
   && apt-get install -y -q --no-install-recommends \
@@ -38,12 +40,11 @@ ENV BOOTSTRAP_HASKELL_NONINTERACTIVE=1
 ENV BOOTSTRAP_HASKELL_GHC_VERSION=9.2.5
 ENV BOOTSTRAP_HASKELL_CABAL_VERSION=3.8.1.0
 ENV BOOTSTRAP_HASKELL_INSTALL_NO_STACK=1
-ENV BOOTSTRAP_HASKELL_ADJUST_BASHRC=1
 RUN curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh
-RUN source $HOME/.ghcup/env
+RUN echo '[ -f "$HOME/.ghcup/env" ] && source "$HOME/.ghcup/env"' >> ~/.profile
 
 # Install the OCaml toolchain
-RUN opam init -a -y --bare --disable-sandboxing --dot-profile="~/.bashrc" \
+RUN opam init -a -y --bare --disable-sandboxing --dot-profile="~/.profile" \
   && opam switch create default --package="ocaml-variants.4.14.1+options,ocaml-option-flambda" \
   && eval $(opam env) \
   && opam update -y \
