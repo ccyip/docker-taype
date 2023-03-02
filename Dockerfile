@@ -31,6 +31,9 @@ RUN apt-get update -y -q \
 RUN echo /usr/local/bin | \
     bash -c "sh <(curl -fsSL https://raw.githubusercontent.com/ocaml/opam/master/shell/install.sh)"
 
+# Install code-server
+RUN curl -fsSL https://code-server.dev/install.sh | sh
+
 # Create user
 ARG guest=reviewer
 RUN useradd --no-log-init -ms /bin/bash -G sudo -p '' ${guest}
