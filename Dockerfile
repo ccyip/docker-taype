@@ -103,9 +103,11 @@ RUN cd taype \
 # without starting a jupyter session
 RUN jupyter nbconvert --to script taype/examples/figs.ipynb
 
-# Port for grip (markdown preview)
+# Port for code-server (for reading code)
+EXPOSE 8080
+# Port for grip (for markdown preview)
 EXPOSE 6419
-# Port for jupyterlab (plotting)
+# Port for jupyterlab (for plotting)
 EXPOSE 8888
 
 CMD ["/bin/bash", "--login"]
