@@ -59,25 +59,22 @@ RUN opam init -a -y --bare --disable-sandboxing --dot-profile="~/.profile" \
   && opam update -y \
   && opam install -y dune ctypes sexplib
 
-# Copy the Taype repositories (taype, taype-driver-plaintext and taype-driver-emp)
-COPY --chown=${guest}:${guest} . .
-
-# Anonymize
-RUN rm -rf {taype,taype-driver-plaintext,taype-driver-emp}/{.git,.github} \
-  && rm -f taype/{TODO.md,CHANGELOG.md} \
-  && shopt -s globstar \
-  && sed -i "/Copyright/d" **/LICENSE \
-  && sed -i "/^-- \(Copyright\|Maintainer\)/d" **/*.hs \
-  && sed -i "/^\(author\|maintainer\|copyright\)/d" **/*.cabal \
-  && sed -i "/\(github\|hackage\)/d" **/*.cabal **/*.md \
-  && sed -i "/\(maintainers\|authors\|source\)/d" **/dune-project
-
-# Build taype-driver-plaintext
+# Copy, anonymize, and build taype-driver-plaintext
+COPY --chown=${guest}:${guest} taype-driver-plaintext taype-driver-plaintext
+RUN cd taype-driver-plaintext \
+  && rm -rf .git .github \
+  && sed -i "/Copyright/d" LICENSE \
+  && sed -i "/\(maintainers\|authors\|source\)/d" dune-project
 RUN cd taype-driver-plaintext \
   && dune build \
   && dune install
 
-# Build taype-driver-emp
+# Copy, anonymize, and build taype-driver-emp
+COPY --chown=${guest}:${guest} taype-driver-emp taype-driver-emp
+RUN cd taype-driver-emp \
+  && rm -rf .git .github \
+  && sed -i "/Copyright/d" LICENSE \
+  && sed -i "/\(maintainers\|authors\|source\)/d" dune-project
 RUN cd taype-driver-emp \
   && mkdir extern/{emp-tool,emp-ot,emp-sh2pc}/build \
   && mkdir src/build \
@@ -88,7 +85,16 @@ RUN cd taype-driver-emp \
   && dune build \
   && dune install
 
-# Build taype
+# Copy, anonymize, and build taype (compiler and examples)
+COPY --chown=${guest}:${guest} taype taype
+RUN cd taype \
+  && rm -rf .git .github \
+  && rm -f {TODO,CHANGELOG}.md \
+  && shopt -s globstar \
+  && sed -i "/Copyright/d" LICENSE \
+  && sed -i "/^-- \(Copyright\|Maintainer\)/d" **/*.hs \
+  && sed -i "/^\(author\|maintainer\|copyright\)/d" *.cabal \
+  && sed -i "/\(github\|hackage\)/d" *.cabal *.md
 RUN cd taype \
   && cabal update \
   && cabal build \
