@@ -34,6 +34,9 @@ RUN echo /usr/local/bin | \
 # Install code-server
 RUN curl -fsSL https://code-server.dev/install.sh | sh
 
+# Install python packages for ploting and markdown preview
+RUN pip install panda numpy seaborn jupyterlab grip
+
 # Create user
 ARG guest=reviewer
 RUN useradd --no-log-init -ms /bin/bash -G sudo -p '' ${guest}
@@ -90,10 +93,6 @@ RUN cd taype \
   && cabal update \
   && cabal build \
   && cabal run shake
-
-# Install python packages for ploting and markdown preview
-RUN pip install panda numpy seaborn jupyterlab grip
-
 # Convert jupyter notebook to python script, so that we can still generate pdfs
 # without starting a jupyter session
 RUN jupyter nbconvert --to script taype/examples/figs.ipynb
