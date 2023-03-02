@@ -90,6 +90,10 @@ RUN cd taype \
 # Install python packages for ploting and markdown preview
 RUN pip install panda numpy seaborn jupyterlab grip
 
+# Convert jupyter notebook to python script, so that we can still generate pdfs
+# without starting a jupyter session
+RUN jupyter nbconvert --to script taype/examples/figs.ipynb
+
 # Port for grip (markdown preview)
 EXPOSE 6419
 # Port for jupyterlab (plotting)
