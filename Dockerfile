@@ -23,6 +23,7 @@ RUN apt-get update -y -q \
     unzip \
     cmake \
     libssl-dev \
+    vim \
     python3-pip \
   && mkdir -p ~/.local/bin
 
