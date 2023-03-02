@@ -87,9 +87,12 @@ RUN cd taype \
   && cabal build \
   && cabal run shake
 
-# Install python packages for ploting
-RUN pip install panda numpy seaborn jupyterlab
+# Install python packages for ploting and markdown preview
+RUN pip install panda numpy seaborn jupyterlab grip
 
+# Port for grip (markdown preview)
+EXPOSE 6419
+# Port for jupyterlab (plotting)
 EXPOSE 8888
 
 CMD ["/bin/bash", "--login"]
