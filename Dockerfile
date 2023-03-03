@@ -9,6 +9,16 @@ RUN sed -i 's/"repository": ".*"/"repository": "anonymous"/' package.json \
 RUN vsce package -o taype.vsix
 
 
+FROM python:3-slim as py-builder
+
+WORKDIR /root
+RUN pip install nbconvert
+COPY taype/examples/figs.ipynb .
+# Convert jupyter notebook to python script, so that we can still generate pdfs
+# without starting a jupyter session
+RUN jupyter nbconvert --to script figs.ipynb
+
+
 FROM debian:stable
 
 SHELL ["/bin/bash", "--login", "-o", "pipefail", "-c"]
@@ -33,7 +43,6 @@ RUN apt-get update -y -q \
     cmake \
     libssl-dev \
     vim \
-    python3-dev \
     python3-pip
 
 # Install opam
@@ -43,8 +52,8 @@ RUN echo /usr/local/bin | \
 # Install code-server
 RUN curl -fsSL https://code-server.dev/install.sh | sh
 
-# Install python packages for ploting and markdown preview
-RUN pip install panda numpy seaborn jupyterlab grip
+# Install python packages for ploting
+RUN pip install panda numpy seaborn
 
 RUN rm -rf ~/.cache
 
@@ -55,11 +64,16 @@ RUN useradd --no-log-init -ms /bin/bash -G sudo -p '' ${guest}
 USER ${guest}
 WORKDIR /home/${guest}
 
-# Install code-server extensions
+# Install code-server extensions and configuration
+#
+# These commands are not very robust, because code-server returns 0 even if it
+# fails, and open-vsx.org (which is used by code-server) sometimes goes down.
+COPY --chown=${guest}:${guest} .config .config
+RUN mkdir .local
+COPY --from=vs-builder --chown=${guest}:${guest} /root/taype.vsix .local
 RUN code-server --install-extension haskell.haskell
-RUN code-server --install-extension ms-python.python
 RUN code-server --install-extension ocamllabs.ocaml-platform
-COPY --from=vs-builder /root/taype.vsix .local
+RUN code-server --install-extension ms-python.python
 RUN code-server --install-extension .local/taype.vsix
 
 # Install the Haskell toolchain
@@ -117,23 +131,12 @@ RUN cd taype \
   && cabal update \
   && cabal build \
   && cabal run shake
-# Convert jupyter notebook to python script, so that we can still generate pdfs
-# without starting a jupyter session
-RUN jupyter nbconvert --to script taype/examples/figs.ipynb
-
-# Copy configuration files
-COPY --chown=${guest}:${guest} .grip .grip
-COPY --chown=${guest}:${guest} .jupyter .jupyter
-COPY --chown=${guest}:${guest} .config .config
+COPY --from=py-builder --chown=${guest}:${guest} /root/figs.py taype/examples
 
 # Copy other files
-COPY --chown=${guest}:${guest} README.md Dockerfile .
+COPY --chown=${guest}:${guest} Dockerfile .
 
-# Port for code-server (for reading code)
+# Port for code-server
 EXPOSE 8080
-# Port for grip (for markdown preview)
-EXPOSE 6419
-# Port for jupyterlab (for plotting)
-EXPOSE 8888
 
 CMD ["/bin/bash", "--login"]
