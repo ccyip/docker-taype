@@ -1,3 +1,14 @@
+FROM node:slim as vs-builder
+
+WORKDIR /root
+RUN npm install -g @vscode/vsce
+COPY taype-vscode .
+# Anonymize and build Taype vscode extension
+RUN sed -i 's/"repository": ".*"/"repository": "anonymous"/' package.json \
+  && sed -i 's/"publisher": ".*"/"publisher": "anonymous"/' package.json
+RUN vsce package -o taype.vsix
+
+
 FROM debian:stable
 
 SHELL ["/bin/bash", "--login", "-o", "pipefail", "-c"]
@@ -17,15 +28,13 @@ RUN apt-get update -y -q \
     bubblewrap \
     ca-certificates \
     pkg-config \
-    rsync \
-    git \
     sudo \
     unzip \
     cmake \
     libssl-dev \
     vim \
-    python3-pip \
-  && mkdir -p ~/.local/bin
+    python3-dev \
+    python3-pip
 
 # Install opam
 RUN echo /usr/local/bin | \
@@ -37,12 +46,21 @@ RUN curl -fsSL https://code-server.dev/install.sh | sh
 # Install python packages for ploting and markdown preview
 RUN pip install panda numpy seaborn jupyterlab grip
 
+RUN rm -rf ~/.cache
+
 # Create user
 ARG guest=reviewer
 RUN useradd --no-log-init -ms /bin/bash -G sudo -p '' ${guest}
 
 USER ${guest}
 WORKDIR /home/${guest}
+
+# Install code-server extensions
+RUN code-server --install-extension haskell.haskell
+RUN code-server --install-extension ms-python.python
+RUN code-server --install-extension ocamllabs.ocaml-platform
+COPY --from=vs-builder /root/taype.vsix .local
+RUN code-server --install-extension .local/taype.vsix
 
 # Install the Haskell toolchain
 ENV BOOTSTRAP_HASKELL_NONINTERACTIVE=1
@@ -102,6 +120,14 @@ RUN cd taype \
 # Convert jupyter notebook to python script, so that we can still generate pdfs
 # without starting a jupyter session
 RUN jupyter nbconvert --to script taype/examples/figs.ipynb
+
+# Copy configuration files
+COPY --chown=${guest}:${guest} .grip .grip
+COPY --chown=${guest}:${guest} .jupyter .jupyter
+COPY --chown=${guest}:${guest} .config .config
+
+# Copy other files
+COPY --chown=${guest}:${guest} README.md Dockerfile .
 
 # Port for code-server (for reading code)
 EXPOSE 8080
