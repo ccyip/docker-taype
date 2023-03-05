@@ -246,7 +246,7 @@ PDFs to your host machine:
 
 ``` sh
 cd taype/examples
-python figs.py
+python3 figs.py
 ```
 
 You are most likely not getting the exact same numbers as in the paper, because
