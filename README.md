@@ -220,6 +220,8 @@ To reproduce Fig. 18 and 19 in the paper, we first run all the microbenchmarks:
 
 ``` sh
 cd taype
+# Build examples
+cabal run shake
 # Be warned: this command takes a long time (possibly more than an hour)
 cabal run shake -- --round=10 run
 ```
