@@ -43,6 +43,7 @@ RUN apt-get update -y -q \
     cmake \
     libssl-dev \
     vim \
+    python3-dev \
     python3-pip
 
 # Install opam
@@ -53,7 +54,7 @@ RUN echo /usr/local/bin | \
 RUN curl -fsSL https://code-server.dev/install.sh | sh
 
 # Install python packages for ploting
-RUN pip install panda numpy seaborn
+RUN pip install panda numpy seaborn ipykernel jinja2
 
 RUN rm -rf ~/.cache
 
@@ -134,7 +135,10 @@ RUN cd taype \
 COPY --from=py-builder --chown=${guest}:${guest} /root/figs.py taype/examples
 
 # Copy other files
-COPY --chown=${guest}:${guest} Dockerfile .
+COPY --chown=${guest}:${guest} Dockerfile README.md .
+
+# Fix linker
+RUN sudo /sbin/ldconfig
 
 # Port for code-server
 EXPOSE 8080
