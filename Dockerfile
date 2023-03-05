@@ -2,11 +2,8 @@ FROM node:slim as vs-builder
 
 WORKDIR /root
 RUN npm install -g @vscode/vsce
-COPY taype-vscode .
-# Anonymize and build Taype vscode extension
-RUN sed -i 's/"repository": ".*"/"repository": "anonymous"/' package.json \
-  && sed -i 's/"publisher": ".*"/"publisher": "anonymous"/' package.json
-RUN vsce package -o taype.vsix
+ADD taype-vscode.tar.xz .
+RUN cd taype-vscode && vsce package -o taype.vsix
 
 
 FROM python:3-slim as py-builder
@@ -71,9 +68,12 @@ WORKDIR /home/${guest}
 #
 # These commands are not very robust, because code-server returns 0 even if it
 # fails, and open-vsx.org (which is used by code-server) sometimes goes down.
-COPY --chown=${guest}:${guest} .config .config
+RUN mkdir -p .config/code-server \
+  && echo 'bind-addr: 0.0.0.0:8080' >> config.yaml \
+  && echo 'auth: none' >> config.yaml \
+  && echo 'cert: false' >> config.yaml
 RUN mkdir .local
-COPY --from=vs-builder --chown=${guest}:${guest} /root/taype.vsix .local
+COPY --from=vs-builder --chown=${guest}:${guest} /root/taype-vscode/taype.vsix .local
 RUN code-server --install-extension haskell.haskell
 RUN code-server --install-extension ocamllabs.ocaml-platform
 RUN code-server --install-extension ms-python.python
@@ -94,22 +94,14 @@ RUN opam init -a -y --bare --disable-sandboxing --dot-profile="~/.profile" \
   && opam update -y \
   && opam install -y dune ctypes sexplib
 
-# Copy, anonymize, and build taype-driver-plaintext
-COPY --chown=${guest}:${guest} taype-driver-plaintext taype-driver-plaintext
-RUN cd taype-driver-plaintext \
-  && rm -rf .git .github \
-  && sed -i "/Copyright/d" LICENSE \
-  && sed -i "/\(maintainers\|authors\|source\)/d" dune-project
+# Copy and build taype-driver-plaintext
+ADD --chown=${guest}:${guest} taype-driver-plaintext.tar.xz .
 RUN cd taype-driver-plaintext \
   && dune build \
   && dune install
 
-# Copy, anonymize, and build taype-driver-emp
-COPY --chown=${guest}:${guest} taype-driver-emp taype-driver-emp
-RUN cd taype-driver-emp \
-  && rm -rf .git .github \
-  && sed -i "/Copyright/d" LICENSE \
-  && sed -i "/\(maintainers\|authors\|source\)/d" dune-project
+# Copy and build taype-driver-emp
+ADD --chown=${guest}:${guest} taype-driver-emp.tar.xz .
 RUN cd taype-driver-emp \
   && mkdir extern/{emp-tool,emp-ot,emp-sh2pc}/build \
   && mkdir src/build \
@@ -119,17 +111,11 @@ RUN cd taype-driver-emp \
   && (cd src/build && cmake .. && make && sudo make install) \
   && dune build \
   && dune install
+# Fix linker
+RUN sudo /sbin/ldconfig
 
-# Copy, anonymize, and build taype (compiler and examples)
-COPY --chown=${guest}:${guest} taype taype
-RUN cd taype \
-  && rm -rf .git .github \
-  && rm -f {TODO,CHANGELOG}.md \
-  && shopt -s globstar \
-  && sed -i "/Copyright/d" LICENSE \
-  && sed -i "/^-- \(Copyright\|Maintainer\)/d" **/*.hs \
-  && sed -i "/^\(author\|maintainer\|copyright\)/d" *.cabal \
-  && sed -i "/\(github\|hackage\)/d" *.cabal *.md
+# Copy and build taype (compiler and examples)
+ADD --chown=${guest}:${guest} taype.tar.xz .
 RUN cd taype \
   && cabal update \
   && cabal build \
@@ -138,9 +124,6 @@ COPY --from=py-builder --chown=${guest}:${guest} /root/figs.py taype/examples
 
 # Copy other files
 COPY --chown=${guest}:${guest} Dockerfile README.md ./
-
-# Fix linker
-RUN sudo /sbin/ldconfig
 
 # Port for code-server
 EXPOSE 8080
