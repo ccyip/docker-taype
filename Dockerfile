@@ -137,7 +137,7 @@ RUN cd taype \
 COPY --from=py-builder --chown=${guest}:${guest} /root/figs.py taype/examples
 
 # Copy other files
-COPY --chown=${guest}:${guest} Dockerfile README.md .
+COPY --chown=${guest}:${guest} Dockerfile README.md ./
 
 # Fix linker
 RUN sudo /sbin/ldconfig
