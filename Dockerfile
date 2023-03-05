@@ -21,6 +21,8 @@ RUN jupyter nbconvert --to script figs.ipynb
 
 FROM debian:stable
 
+ENV LANG C.UTF-8
+
 SHELL ["/bin/bash", "--login", "-o", "pipefail", "-c"]
 
 # Install system dependencies
