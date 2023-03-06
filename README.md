@@ -182,24 +182,24 @@ the Taype source code and the listings in the paper.
 
 | In paper | In artifact | Comment |
 | -------- | ----------- | ------- |
-| `𝟙` | `unit` | mathbb one |
-| `𝔹` | `bool` | mathbb B |
-| `ℤ` | `int` | mathbb Z |
-| `×` | `*` | product type former |
-| `⟨_,_⟩` | `` `(_,_) `` | oblivious pair |
-| `↑` | `!` | promotion |
+| `\vmathbb{1}` | `unit` | unit type |
+| `\mathbb{B}` | `bool` | boolean type |
+| `\mathbb{Z}` | `int` | integer type |
+| `\times` | `*` | product type former |
+| `\langle _,_ \rangle` | `` `(_,_) `` | oblivious pair |
+| `\uparrow` | `!` | promotion |
 | name with hat | prefixed by `` ` `` | e.g., `` `x `` for x with hat |
 | name with tilde | prefixed by `` ~ `` | e.g., `` ~x `` for x with tilde |
 | section and retraction with subscripts | use underscore | e.g., `s_list` and `r_list` |
-| `≡` | `==` | integer equality |
-| `𝜆` | `\` | lambda abstraction |
-| `⇒` | `->` | separator used in lambda abstraction and case analysis |
+| `\equiv` | `==` | integer equality |
+| `\lambda` | `\` | lambda abstraction |
+| `\Rightarrow` | `->` | separator used in lambda abstraction and case analysis |
 | `case _ of _` | `case _ of _ end` | case analysis (pattern matching) |
-| mathcal `A` | `@` | oblivious array type |
+| `\mathcal{A}` | `@` | oblivious array type |
 | `A(_)` | `@new` | array creation operator |
 | `++` | `@concat` | array concatenation operator |
 | `_(_,_)` | `@slice` | array slicing operator |
-| `ℕ` | `int` | mathbb N, size type; we reuse the integer type for simplicity |
+| `\mathbb{N}` | `int` | size type; we reuse the integer type for simplicity |
 | `prom` with subscript | use `#` and prefixed by `~` | the promotion constructor, e.g., `~list` in Fig. 11 has constructor `~prom#list` |
 | `if` with hat and subscript | use `#` and prefixed by `~` | the leaky if constructor, e.g., `~list` in Fig. 11 has constructor `~if#list` (admittedly it is a bit confusing that we use `~` here) |
 | `case` with tilde and subscript | use `#` and prefixed by `~` | the leaky case analysis function, e.g., in Fig. 11 it is `~case#list` |
