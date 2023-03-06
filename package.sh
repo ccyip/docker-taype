@@ -21,6 +21,7 @@ tar_ () {
 # Clean up
 
 rm -rf taype taype-driver-plaintext taype-driver-emp taype-vscode
+rm -f taype.tar.xz taype-driver-plaintext.tar.xz taype-driver-emp.tar.xz taype-vscode.tar.xz
 
 # Download the latest source code
 
