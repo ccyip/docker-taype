@@ -2,8 +2,8 @@ FROM node:slim as vs-builder
 
 WORKDIR /root
 RUN npm install -g @vscode/vsce
-ADD taype-vscode.tar.xz .
-RUN cd taype-vscode && vsce package -o taype.vsix
+COPY taype-vscode .
+RUN vsce package -o taype.vsix
 
 
 FROM python:3-slim as py-builder
@@ -69,11 +69,12 @@ WORKDIR /home/${guest}
 # These commands are not very robust, because code-server returns 0 even if it
 # fails, and open-vsx.org (which is used by code-server) sometimes goes down.
 RUN mkdir -p .config/code-server \
+  && cd .config/code-server \
   && echo 'bind-addr: 0.0.0.0:8080' >> config.yaml \
   && echo 'auth: none' >> config.yaml \
   && echo 'cert: false' >> config.yaml
 RUN mkdir .local
-COPY --from=vs-builder --chown=${guest}:${guest} /root/taype-vscode/taype.vsix .local
+COPY --from=vs-builder --chown=${guest}:${guest} /root/taype.vsix .local
 RUN code-server --install-extension haskell.haskell
 RUN code-server --install-extension ocamllabs.ocaml-platform
 RUN code-server --install-extension ms-python.python
@@ -95,13 +96,13 @@ RUN opam init -a -y --bare --disable-sandboxing --dot-profile="~/.profile" \
   && opam install -y dune ctypes sexplib
 
 # Copy and build taype-driver-plaintext
-ADD --chown=${guest}:${guest} taype-driver-plaintext.tar.xz .
+COPY --chown=${guest}:${guest} taype-driver-plaintext taype-driver-plaintext
 RUN cd taype-driver-plaintext \
   && dune build \
   && dune install
 
 # Copy and build taype-driver-emp
-ADD --chown=${guest}:${guest} taype-driver-emp.tar.xz .
+COPY --chown=${guest}:${guest} taype-driver-emp taype-driver-emp
 RUN cd taype-driver-emp \
   && mkdir extern/{emp-tool,emp-ot,emp-sh2pc}/build \
   && mkdir src/build \
@@ -115,7 +116,7 @@ RUN cd taype-driver-emp \
 RUN sudo /sbin/ldconfig
 
 # Copy and build taype (compiler and examples)
-ADD --chown=${guest}:${guest} taype.tar.xz .
+COPY --chown=${guest}:${guest} taype taype
 RUN cd taype \
   && cabal update \
   && cabal build \
