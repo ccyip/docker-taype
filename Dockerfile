@@ -65,9 +65,6 @@ USER ${guest}
 WORKDIR /home/${guest}
 
 # Install code-server extensions and configuration
-#
-# These commands are not very robust, because code-server returns 0 even if it
-# fails, and open-vsx.org (which is used by code-server) sometimes goes down.
 RUN mkdir -p .config/code-server \
   && cd .config/code-server \
   && echo 'bind-addr: 0.0.0.0:8080' >> config.yaml \
@@ -75,10 +72,10 @@ RUN mkdir -p .config/code-server \
   && echo 'cert: false' >> config.yaml
 RUN mkdir .local
 COPY --from=vs-builder --chown=${guest}:${guest} /root/taype.vsix .local
-RUN code-server --install-extension haskell.haskell
-RUN code-server --install-extension ocamllabs.ocaml-platform
-RUN code-server --install-extension ms-python.python
-RUN code-server --install-extension .local/taype.vsix
+RUN code-server --install-extension haskell.haskell | grep 'was successfully installed'
+RUN code-server --install-extension ocamllabs.ocaml-platform | grep 'was successfully installed'
+RUN code-server --install-extension ms-python.python | grep 'was successfully installed'
+RUN code-server --install-extension .local/taype.vsix | grep 'was successfully installed'
 
 # Install the Haskell toolchain
 ENV BOOTSTRAP_HASKELL_NONINTERACTIVE=1
