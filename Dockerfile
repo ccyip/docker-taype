@@ -90,6 +90,7 @@ RUN echo '[ -f "$HOME/.ghcup/env" ] && source "$HOME/.ghcup/env"' >> ~/.profile
 RUN opam init -a -y --bare --disable-sandboxing --dot-profile="~/.profile" \
   && opam switch create default --package="ocaml-variants.4.14.1+options,ocaml-option-flambda" \
   && eval $(opam env) \
+  && opam repo add coq-released https://coq.inria.fr/opam/released \
   && opam update -y \
   && opam install -y dune ctypes sexplib
 
@@ -104,10 +105,10 @@ COPY --chown=${guest}:${guest} taype-driver-emp taype-driver-emp
 RUN cd taype-driver-emp \
   && mkdir extern/{emp-tool,emp-ot,emp-sh2pc}/build \
   && mkdir src/build \
-  && (cd extern/emp-tool/build && cmake .. && make && sudo make install) \
-  && (cd extern/emp-ot/build && cmake .. && make && sudo make install) \
-  && (cd extern/emp-sh2pc/build && cmake .. && make && sudo make install) \
-  && (cd src/build && cmake .. && make && sudo make install) \
+  && (cd extern/emp-tool/build && cmake .. && make -j$(nproc) && sudo make install) \
+  && (cd extern/emp-ot/build && cmake .. && make -j$(nproc) && sudo make install) \
+  && (cd extern/emp-sh2pc/build && cmake .. && make -j$(nproc) && sudo make install) \
+  && (cd src/build && cmake .. && make -j$(nproc) && sudo make install) \
   && dune build \
   && dune install
 # Fix linker
@@ -123,12 +124,8 @@ COPY --from=py-builder --chown=${guest}:${guest} /root/figs.py taype/examples
 
 # Copy and build oadt (Coq formalization)
 COPY --chown=${guest}:${guest} oadt oadt
-RUN cd oadt \
-  && opam repo add coq-released https://coq.inria.fr/opam/released \
-  && opam update -y \
-  && opam install -y --deps-only .
-RUN cd oadt \
-  && make
+RUN cd oadt && opam install -y --deps-only .
+RUN cd oadt && make -j$(nproc)
 
 # Copy other files
 COPY --chown=${guest}:${guest} Dockerfile README.md ./
