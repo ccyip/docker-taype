@@ -18,6 +18,8 @@ tar_ () {
     tar caf $1.tar.xz $1
 }
 
+set -euxo pipefail
+
 # Clean up
 
 rm -rf taype taype-driver-plaintext taype-driver-emp taype-vscode
