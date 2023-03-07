@@ -23,7 +23,7 @@ which contains:
   + Haskell: for reading source code of the Taype compiler
   + OCaml: for reading source code of the test cases and the generated OCaml
     code
-  + Python (with Jupyter notebook): for interpreting and plotting our experiment
+  + Python (with Jupyter notebook): for interpreting and plotting our experimental
     results
 
 All source code in the docker image has been pre-compiled. The clean version of
@@ -35,7 +35,7 @@ download one of our docker images from Zenodo, depending on your machine's
 architecture. We provide images for amd64 (i.e. x86-64) and arm64 (e.g., for
 Apple Silicon Mac). You need around 10 GB of space to load them.
 
-Now we can load and run the downloaded docker image. The following commands
+Now you can load and run the downloaded docker image. The following commands
 create an image called `taype-image`, and start a container called `taype`. We
 also expose the port `8080` which can be used to access the code-server.
 
@@ -81,8 +81,8 @@ cd taype
 cabal run shake -- run/tutorial
 ```
 
-We will explain what exactly this command is doing in the next section. But you
-should see the output of the tests, which contains headers like
+We will explain what exactly this command is doing in the next section, but you
+should see the output of the tests. These contain headers like
 
 `== Test case 1 (round 1) ==`
 
@@ -93,10 +93,10 @@ generates CSV files (in this case
 script for plotting.
 
 
-# Step-by-Step Instructions 
+# Step-by-Step Instructions
 
-In this section, we provide details on how the figures (claims) in the paper
-correspond to the implementation, how to reproduce the experiment results, how
+In this section, we will provide details on how the figures (claims) in the paper
+correspond to the implementation, how to reproduce the experimental results, how
 to use our tools, and the minor discrepancies between the implementation and the
 paper.
 
@@ -134,10 +134,10 @@ which we will summerize later.
 | Fig. 3 | `` `list ``, `s_list`, `r_list` and `` `elem `` in `taype/examples/tutorial/tutorial.tp` | This tutorial also includes an insertion function that is not presented in the paper |
 | Fig. 4 (a) | `elem` in `taype/examples/tutorial/tutorial.tpc` | See note 1 |
 | Fig. 4 (b) | `elem` in `taype/examples/tutorial/tutorial.oil` | See note 2 |
-| Fig. 5 | `~@`, `~int`, `~s_int` and `~tape` in `taype/examples/common/prelude.oil` and `` `list `` in `taype/examples/tutorial/tutorial.oil` | the naming discrepancy will be discussed shortly |
+| Fig. 5 | `~@`, `~int`, `~s_int` and `~tape` in `taype/examples/common/prelude.oil` and `` `list `` in `taype/examples/tutorial/tutorial.oil` | The naming discrepancy will be discussed shortly |
 | Fig. 6 | `Expr`, `Def` and `Label` in `taype/src/Taype/Syntax.hs` | The `Expr` and `Def` data types are supersets of both surface Taype and core Taype syntax, using *locally nameless representation* for binders |
-| Fig. 7 | none | The semantics serves as the specification of the language, not part of the implementation |
-| Fig. 8 | none | The declarative typing rules are specification of the type system, not part of the implementation |
+| Fig. 7 | none | The semantics serve as the specification of the language, not part of the implementation |
+| Fig. 8 | none | The declarative typing rules are the specification of the type system, not part of the implementation |
 | Section 3.4 | `taype/src/Taype/TypeChecker.hs` | This is the implementation of our bidirectional type checker |
 | Fig. 9 | `Expr`, `Ty` and `Def` in `taype/src/Oil/Syntax.hs` | Some operations do not have specific constructors in these data types: they are simply global names |
 | Fig. 10 | `toOilTy` in `taype/src/Oil/Translation.hs` | See note 3 |
@@ -147,9 +147,9 @@ which we will summerize later.
 | Fig. 14 | `toOilSize` in `taype/src/Oil/Translation.hs` | |
 | Fig. 15 | `toOilDef` in `taype/src/Oil/Translation.hs` | |
 | Section 4.3 | `toOilProgram` in `taype/src/Oil/Translation.hs` | |
-| Fig. 16 | `taype/examples/record/record.tp` | The corresponding functions have the same or simlar names as in the figure |
+| Fig. 16 | `taype/examples/record/record.tp` | The corresponding functions have the same or similar names as in the figure |
 | Section 5.2 (secure calculator) | `taype/examples/calculator/calculator.tp` and `taype/examples/calculator/test_calculator.ml` | |
-| Section 5.3 | `taype/examples/dtree/dtree.tp`, `taype/examples/tree/tree.tp` and `taype/examples/list/list.tp` | These are the Taype source code of the examples for the microbenchmarks |
+| Section 5.3 | `taype/examples/dtree/dtree.tp`, `taype/examples/tree/tree.tp` and `taype/examples/list/list.tp` | This is the Taype source code of the examples for the microbenchmarks |
 | Fig. 18 and 19 | See [Reproduce the experiment results](#reproduce-the-experiment-results) | |
 
 Our main claim is that the security concern and the program logic can be cleanly
@@ -162,7 +162,7 @@ Notes:
 1. The file `tutorial.tpc` is generated by the compiler, so you need to
    re-generate it if you have cleaned the project. The programs in this file are
    in administrative normal form (ANF), while the figure is not typeset in ANF
-   for readability, as clarified in the paper. Besides, we have applied the
+   for readability, as clarified in the paper. Similarly, we have applied the
    optimization described in section 5, so it does not correspond to the figure
    exactly. That said, there are commandline options to disable optimization and
    print it in a more readable form; see [Understand the compilation
@@ -202,7 +202,7 @@ the Taype source code and the listings in the paper.
 | `\mathbb{N}` | `int` | size type; we reuse the integer type for simplicity |
 | `prom` with subscript | use `#` and prefixed by `~` | the promotion constructor, e.g., `~list` in Fig. 11 has constructor `~prom#list` |
 | `if` with hat and subscript | use `#` and prefixed by `~` | the leaky if constructor, e.g., `~list` in Fig. 11 has constructor `~if#list` (admittedly it is a bit confusing that we use `~` here) |
-| `case` with tilde and subscript | use `#` and prefixed by `~` | the leaky case analysis function, e.g., in Fig. 11 it is `~case#list` |
+| `case` with tilde and subscript | use `#` and prefixed by `~` | the leaky case analysis function, e.g., in Fig. 11 is `~case#list` |
 | `if` with tilde | `~case#bool` | e.g., in Fig. 13 (a) |
 
 We should explain the discrepancy about `if` with tilde a bit more. In the
@@ -253,7 +253,7 @@ python3 figs.py
 
 You are most likely not getting the exact same numbers as in the paper, because
 the performance of these oblivious programs vary, depending on the power of your
-machine, the supported cryptographic instructions of your CPUs and a lot other
+machine, the supported cryptographic instructions of your CPUs and a lot of other
 factors, let alone running them in a docker container. However, you should
 observe similar curves and comparative results. Note that you will observe a
 different result for Fig. 19 (b), because we implemented an optimization that
