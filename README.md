@@ -14,6 +14,9 @@ which contains:
 - Examples and experiments in the paper. As Taype programs are compiled to OCaml
   libraries, our test cases are also written in OCaml, which handle IO and
   invoke these libraries. Located at `~/taype/examples`.
+- Coq formalization of the Taype core calculus, based on [Ye and Delaware,
+  Oblivious Algebraic Data Types, POPL22](https://doi.org/10.1145/3498713),
+  located at `~/oadt`.
 - A [code-server](https://github.com/coder/code-server) (VS Code in the
   browser), so that we can view source code and interpret experiment results
   simply in a browser (of course you do not have to). We pre-installed a few VS
@@ -23,6 +26,7 @@ which contains:
   + Haskell: for reading source code of the Taype compiler
   + OCaml: for reading source code of the test cases and the generated OCaml
     code
+  + VsCoq: for reading Coq formalization
   + Python (with Jupyter notebook): for interpreting and plotting our experimental
     results
 
@@ -33,7 +37,7 @@ Zenodo.
 To evaluate this artifact, first install [docker](https://www.docker.com/). Then
 download one of our docker images from Zenodo, depending on your machine's
 architecture. We provide images for amd64 (i.e. x86-64) and arm64 (e.g., for
-Apple Silicon Mac). You need around 10 GB of space to load them.
+Apple Silicon Mac). You need around 12 GB of space to load them.
 
 Now you can load and run the downloaded docker image. The following commands
 create an image called `taype-image`, and start a container called `taype`. We
@@ -136,8 +140,8 @@ which we will summerize later.
 | Fig. 4 (b) | `elem` in `taype/examples/tutorial/tutorial.oil` | See note 2 |
 | Fig. 5 | `~@`, `~int`, `~s_int` and `~tape` in `taype/examples/common/prelude.oil` and `` `list `` in `taype/examples/tutorial/tutorial.oil` | The naming discrepancy will be discussed shortly |
 | Fig. 6 | `Expr`, `Def` and `Label` in `taype/src/Taype/Syntax.hs` | The `Expr` and `Def` data types are supersets of both surface Taype and core Taype syntax, using *locally nameless representation* for binders |
-| Fig. 7 | none | The semantics serve as the specification of the language, not part of the implementation |
-| Fig. 8 | none | The declarative typing rules are the specification of the type system, not part of the implementation |
+| Fig. 7 | See [Coq formalization of the core calculus](#coq-formalization-of-the-core-calculus) | |
+| Fig. 8 | See [Coq formalization of the core calculus](#coq-formalization-of-the-core-calculus) | |
 | Section 3.4 | `taype/src/Taype/TypeChecker.hs` | This is the implementation of our bidirectional type checker |
 | Fig. 9 | `Expr`, `Ty` and `Def` in `taype/src/Oil/Syntax.hs` | Some operations do not have specific constructors in these data types: they are simply global names |
 | Fig. 10 | `toOilTy` in `taype/src/Oil/Translation.hs` | See note 3 |
@@ -196,7 +200,7 @@ the Taype source code and the listings in the paper.
 | `\Rightarrow` | `->` | separator used in lambda abstraction and case analysis |
 | `case _ of _` | `case _ of _ end` | case analysis (pattern matching) |
 | `\mathcal{A}` | `@` | oblivious array type |
-| `A(_)` | `@new` | array creation operator |
+| `\mathcal{A}(_)` | `@new` | array creation operator |
 | `++` | `@concat` | array concatenation operator |
 | `_(_,_)` | `@slice` | array slicing operator |
 | `\mathbb{N}` | `int` | size type; we reuse the integer type for simplicity |
@@ -262,6 +266,52 @@ The final version of the paper will include this optimization.
 
 If you are interested in how the tests are done, see [Understand the
 test cases](#understand-the-test-cases).
+
+## Coq formalization of the core calculus
+
+The Taype core calculus is mechanized in Coq (`~/oadt`). Note that the key
+statements of this formalization do not correspond to anything in the submitted
+paper yet, but the final version will include theorems of soundness and
+obliviousness (security guarantee).
+
+To validate the formalization, run:
+
+```sh
+cd oadt
+make clean
+make
+```
+
+You should see two lines of `Closed under the global context`, which are printed
+out from the file `oadt/theories/lang_oadt/metatheories.v`, indicating that the
+main theorems are proved without any axioms.
+
+We summarize the correspondence between the paper and the Coq formalization in
+the following table, and discuss the discrepancies after:
+
+| In paper | In artifact | Comment |
+| -------- | ----------- | ------- |
+| Fig. 6 | `expr`, `gdef`, `llabel`, `otval` and `oval` in `oadt/theories/lang_oadt/syntax.v` | |
+| Fig. 7 | `step`, `ectx` and `lectx` in `oadt/theories/lang_oadt/semantics.v` | |
+| Fig. 8 | `typing` in `oadt/theories/lang_oadt/typing.v` | |
+
+The main theorems `soundness` and `obliviousness` are located in
+`oadt/theories/lang_oadt/metatheories.v`. We will add these statements to the
+final version of the paper.
+
+For simplicity, the formalized core calculus is different from the one presented
+in the paper, which will be clarified in the paper as well:
+- We do not mechanize the base type integer, similar to [Ye and Delaware,
+  Oblivious Algebraic Data Types, POPL22](https://doi.org/10.1145/3498713)
+- We use fold/unfold style ADT instead of ML-style ADT. The equivalence between
+  these two styles is well-known.
+- We use negative elimination of product type (i.e. projection) instead of
+  positive elimination (i.e. case analysis). These two styles are equivalent in
+  our context.
+- We use *locally nameless representation* for binders.
+- Some notational differences which should be easy to disambiguate. One possible
+  confusion is that we use `~` for hat in the formalization, e.g., `~bool`
+  (which is `` `bool `` in Taype source code).
 
 ## Understand the compilation pipeline
 
