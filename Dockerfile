@@ -74,6 +74,7 @@ RUN mkdir .local
 COPY --from=vs-builder --chown=${guest}:${guest} /root/taype.vsix .local
 RUN code-server --install-extension haskell.haskell | grep 'was successfully installed'
 RUN code-server --install-extension ocamllabs.ocaml-platform | grep 'was successfully installed'
+RUN code-server --install-extension maximedenes.vscoq | grep 'was successfully installed'
 RUN code-server --install-extension ms-python.python | grep 'was successfully installed'
 RUN code-server --install-extension .local/taype.vsix | grep 'was successfully installed'
 
@@ -119,6 +120,15 @@ RUN cd taype \
   && cabal build \
   && cabal run shake
 COPY --from=py-builder --chown=${guest}:${guest} /root/figs.py taype/examples
+
+# Copy and build oadt (Coq formalization)
+COPY --chown=${guest}:${guest} oadt oadt
+RUN cd oadt \
+  && opam repo add coq-released https://coq.inria.fr/opam/released \
+  && opam update -y \
+  && opam install -y --deps-only .
+RUN cd oadt \
+  && make
 
 # Copy other files
 COPY --chown=${guest}:${guest} Dockerfile README.md ./
