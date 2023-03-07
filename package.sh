@@ -2,7 +2,7 @@
 
 fetch() {
     git clone \
-        --recursive --depth 1 --shallow-submodules \
+        -b pldi23 --recursive --depth 1 --shallow-submodules \
         git@github.com:ccyip/$1.git
 }
 
