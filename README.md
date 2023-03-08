@@ -269,10 +269,10 @@ test cases](#understand-the-test-cases).
 
 ## Coq formalization of the core calculus
 
-The Taype core calculus is mechanized in Coq (`~/taype-theories`). Note that the
-key statements of this formalization do not correspond to anything in the
-submitted paper yet, but the final version will include theorems of soundness
-and obliviousness (security guarantee).
+We have mechanized the Taype core calculus and its metatheory in Coq
+(`~/taype-theories`). The metatheory proofs do not correspond to anything in the
+submitted version of the paper, but the final version will include theorems of
+type soundness and obliviousness (our key security guarantee).
 
 To validate the formalization, run:
 
@@ -282,12 +282,13 @@ make clean
 make
 ```
 
-You should see two lines of `Closed under the global context`, which are printed
-out from the file `taype-theories/theories/lang_taype/metatheories.v`,
-indicating that the main theorems are proved without any axioms.
+These commands should output two lines stating `Closed under the global
+context`. These are produced from the file
+`taype-theories/theories/lang_taype/metatheories.v`, indicating that both of the
+key theorems have been proved without any axioms.
 
-We summarize the correspondence between the paper and the Coq formalization in
-the following table, and discuss the discrepancies after:
+The following table summarizes the correspondence between the paper and the Coq
+formalization:
 
 | In paper | In artifact | Comment |
 | -------- | ----------- | ------- |
@@ -295,21 +296,27 @@ the following table, and discuss the discrepancies after:
 | Fig. 7 | `step`, `ectx` and `lectx` in `taype-theories/theories/lang_taype/semantics.v` | |
 | Fig. 8 | `typing` in `taype-theories/theories/lang_taype/typing.v` | |
 
-The main theorems `soundness` and `obliviousness` are located in
+The main theorems of `soundness` and `obliviousness` are found in
 `taype-theories/theories/lang_taype/metatheories.v`. We will add these
 statements to the final version of the paper.
 
-For simplicity, the formalized core calculus is different from the one presented
-in the paper, which will be clarified in the paper as well:
-- We do not mechanize the base type integer, similar to [Ye and Delaware,
-  Oblivious Algebraic Data Types, POPL22](https://doi.org/10.1145/3498713)
-- We use fold/unfold style ADT instead of ML-style ADT. The equivalence between
-  these two styles is well-known.
-- We use negative elimination of product type (i.e. projection) instead of
-  positive elimination (i.e. case analysis). These two styles are equivalent in
-  our context.
-- We use *locally nameless representation* for binders.
-- Some notational differences which should be easy to disambiguate.
+For simplicity, our mechanization of the core calculus differs
+slightly from the one presented in the paper. The final version of the
+paper will also clarify these differences:
+- The mechanization does not include integers as a base type, similar
+  to [Ye and Delaware, Oblivious Algebraic Data Types,
+  POPL22](https://doi.org/10.1145/3498713)
+- The mechanization includes `fold` and `unfold` operations for
+  recursive ADTs, instead of the ML-style ADTs in the paper. The
+  equivalence between these two styles is well-known (cf. Chapter 20
+  of 'Types and Programming Languages').
+- The mechanization has a negative elimination form for product types
+  (i.e. projection) instead of positive elimination forms (i.e. case
+  analysis). These two styles are equivalent in our context.
+- The mechanization uses *locally nameless representation* for
+  binders.
+- Some notational differences which should be easy to disambiguate: we use
+  unicode `\mathbb{B}` instead of `bool`, for example.
 
 ## Understand the compilation pipeline
 
