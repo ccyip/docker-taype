@@ -309,9 +309,7 @@ in the paper, which will be clarified in the paper as well:
   positive elimination (i.e. case analysis). These two styles are equivalent in
   our context.
 - We use *locally nameless representation* for binders.
-- Some notational differences which should be easy to disambiguate. One possible
-  confusion is that we use `~` for hat in the formalization, e.g., `~bool`
-  (which is `` `bool `` in Taype source code).
+- Some notational differences which should be easy to disambiguate.
 
 ## Understand the compilation pipeline
 
