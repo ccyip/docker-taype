@@ -22,8 +22,8 @@ set -euxo pipefail
 
 # Clean up
 
-rm -rf taype taype-driver-plaintext taype-driver-emp taype-vscode oadt
-rm -f taype.tar.xz taype-driver-plaintext.tar.xz taype-driver-emp.tar.xz taype-vscode.tar.xz oadt.tar.xz
+rm -rf taype taype-driver-plaintext taype-driver-emp taype-vscode taype-theories
+rm -f taype.tar.xz taype-driver-plaintext.tar.xz taype-driver-emp.tar.xz taype-vscode.tar.xz taype-theories.tar.xz
 
 # Download the latest source code
 
@@ -32,6 +32,7 @@ fetch taype-driver-plaintext
 fetch taype-driver-emp
 fetch taype-vscode
 fetch oadt
+mv oadt taype-theories
 
 # Anonymize
 
@@ -63,7 +64,7 @@ sed_ '/^(author|maintainer|copyright)/d' *.cabal
 sed_ '/(github|hackage)/d' *.cabal *.md
 cd ..
 
-cd oadt
+cd taype-theories
 rm -rf .git .github
 sed_ '/Copyright/d' LICENSE
 sed_ '/^(maintainer|homepage|dev-repo|bug-reports)/d' *.opam
@@ -76,4 +77,4 @@ tar_ taype
 tar_ taype-driver-plaintext
 tar_ taype-driver-emp
 tar_ taype-vscode
-tar_ oadt
+tar_ taype-theories

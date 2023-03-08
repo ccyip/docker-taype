@@ -122,10 +122,10 @@ RUN cd taype \
   && cabal run shake
 COPY --from=py-builder --chown=${guest}:${guest} /root/figs.py taype/examples
 
-# Copy and build oadt (Coq formalization)
-COPY --chown=${guest}:${guest} oadt oadt
-RUN cd oadt && opam install -y --deps-only .
-RUN cd oadt && make -j$(nproc)
+# Copy and build taype-theories (Coq formalization)
+COPY --chown=${guest}:${guest} taype-theories taype-theories
+RUN cd taype-theories && opam install -y --deps-only .
+RUN cd taype-theories && make -j$(nproc)
 
 # Copy other files
 COPY --chown=${guest}:${guest} Dockerfile README.md ./
