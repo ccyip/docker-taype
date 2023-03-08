@@ -16,7 +16,7 @@ which contains:
   invoke these libraries. Located at `~/taype/examples`.
 - Coq formalization of the Taype core calculus, based on [Ye and Delaware,
   Oblivious Algebraic Data Types, POPL22](https://doi.org/10.1145/3498713),
-  located at `~/oadt`.
+  located at `~/taype-theories`.
 - A [code-server](https://github.com/coder/code-server) (VS Code in the
   browser), so that we can view source code and interpret experiment results
   simply in a browser (of course you do not have to). We pre-installed a few VS
@@ -269,35 +269,35 @@ test cases](#understand-the-test-cases).
 
 ## Coq formalization of the core calculus
 
-The Taype core calculus is mechanized in Coq (`~/oadt`). Note that the key
-statements of this formalization do not correspond to anything in the submitted
-paper yet, but the final version will include theorems of soundness and
-obliviousness (security guarantee).
+The Taype core calculus is mechanized in Coq (`~/taype-theories`). Note that the
+key statements of this formalization do not correspond to anything in the
+submitted paper yet, but the final version will include theorems of soundness
+and obliviousness (security guarantee).
 
 To validate the formalization, run:
 
 ```sh
-cd oadt
+cd taype-theories
 make clean
 make
 ```
 
 You should see two lines of `Closed under the global context`, which are printed
-out from the file `oadt/theories/lang_oadt/metatheories.v`, indicating that the
-main theorems are proved without any axioms.
+out from the file `taype-theories/theories/lang_taype/metatheories.v`,
+indicating that the main theorems are proved without any axioms.
 
 We summarize the correspondence between the paper and the Coq formalization in
 the following table, and discuss the discrepancies after:
 
 | In paper | In artifact | Comment |
 | -------- | ----------- | ------- |
-| Fig. 6 | `expr`, `gdef`, `llabel`, `otval` and `oval` in `oadt/theories/lang_oadt/syntax.v` | |
-| Fig. 7 | `step`, `ectx` and `lectx` in `oadt/theories/lang_oadt/semantics.v` | |
-| Fig. 8 | `typing` in `oadt/theories/lang_oadt/typing.v` | |
+| Fig. 6 | `expr`, `gdef`, `llabel`, `otval` and `oval` in `taype-theories/theories/lang_taype/syntax.v` | |
+| Fig. 7 | `step`, `ectx` and `lectx` in `taype-theories/theories/lang_taype/semantics.v` | |
+| Fig. 8 | `typing` in `taype-theories/theories/lang_taype/typing.v` | |
 
 The main theorems `soundness` and `obliviousness` are located in
-`oadt/theories/lang_oadt/metatheories.v`. We will add these statements to the
-final version of the paper.
+`taype-theories/theories/lang_taype/metatheories.v`. We will add these
+statements to the final version of the paper.
 
 For simplicity, the formalized core calculus is different from the one presented
 in the paper, which will be clarified in the paper as well:
