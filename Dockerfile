@@ -130,6 +130,9 @@ RUN cd taype-theories && make -j$(nproc)
 # Copy other files
 COPY --chown=${guest}:${guest} Dockerfile README.md ./
 
+# Remove some cache to save space
+RUN rm -rf ~/.ghcup/cache
+
 # Port for code-server
 EXPOSE 8080
 
