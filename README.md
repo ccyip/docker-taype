@@ -37,7 +37,8 @@ Zenodo.
 To evaluate this artifact, first install [docker](https://www.docker.com/). Then
 download one of our docker images from Zenodo, depending on your machine's
 architecture. We provide images for amd64 (i.e. x86-64) and arm64 (e.g., for
-Apple Silicon Mac). You need around 12 GB of space to load them.
+Apple Silicon Mac). You need around 12 GB of storage space to load them, and at
+least 4 GB of RAM for the container to run the experiments.
 
 Now you can load and run the downloaded docker image. The following commands
 create an image called `taype-image`, and start a container called `taype`. We
@@ -50,6 +51,9 @@ mv taype-image-<arch>.tar.xz taype-image.tar.xz
 docker load -i taype-image.tar.xz
 docker run -dt -p 8080:8080 --name taype taype-image
 ```
+
+Make sure the container can use at least 4 GB of memory. You can check the
+memory limit by running `docker stats`.
 
 To launch the code-server, run:
 
@@ -77,7 +81,7 @@ Your user name is `reviewer` (without password) and the current directory is `~`
 (i.e. `/home/reviewer`). In the rest of this document, we assume commands are
 run inside the container.
 
-To quickly test this artifact, we compile the tutorial example and run its test
+To quickly test this artifact, compile the tutorial example and run its test
 cases.
 
 ``` sh
@@ -92,9 +96,9 @@ should see the output of the tests. These contain headers like
 
 and then a few numbers for the performance statistics. This command also
 generates CSV files (in this case
-`examples/tutorial/test_elem.plaintext.output.csv` and
-`examples/tutorial/test_elem.emp.output.csv`) which can be used by our Python
-script for plotting.
+`examples/output/tutorial/test_elem.plaintext.output.csv` and
+`examples/output/tutorial/test_elem.emp.output.csv`) which can be used by our
+Python script for plotting.
 
 
 # Step-by-Step Instructions
@@ -134,27 +138,33 @@ which we will summerize later.
 | In paper | In artifact | Comment |
 | -------- | ----------- | ------- |
 | Fig. 1 | See [Understand the compilation pipeline](#understand-the-compilation-pipeline) | |
-| Fig. 2 | `list` and `elem` in `taype/examples/tutorial/tutorial.tp` | |
-| Fig. 3 | `` `list ``, `s_list`, `r_list` and `` `elem `` in `taype/examples/tutorial/tutorial.tp` | This tutorial also includes an insertion function that is not presented in the paper |
-| Fig. 4 (a) | `elem` in `taype/examples/tutorial/tutorial.tpc` | See note 1 |
-| Fig. 4 (b) | `elem` in `taype/examples/tutorial/tutorial.oil` | See note 2 |
-| Fig. 5 | `~@`, `~int`, `~s_int` and `~tape` in `taype/examples/common/prelude.oil` and `` `list `` in `taype/examples/tutorial/tutorial.oil` | The naming discrepancy will be discussed shortly |
-| Fig. 6 | `Expr`, `Def` and `Label` in `taype/src/Taype/Syntax.hs` | The `Expr` and `Def` data types are supersets of both surface Taype and core Taype syntax, using *locally nameless representation* for binders |
-| Fig. 7 | See [Coq formalization of the core calculus](#coq-formalization-of-the-core-calculus) | |
+| Fig. 2 | `list` and `elem` in `taype/examples/tutorial/tutorial.tp` | This tutorial also includes an insertion function that is not presented in the paper |
+| Fig. 3 | `` `list `` in `taype/examples/tutorial/tutorial.tp`, and `patient`, `patient_view` and `` `patient `` in `taype/examples/record/record.tp` | |
+| Fig. 4 | `s_list`, `r_list` and `` `elem `` in `taype/examples/tutorial/tutorial.tp` | |
+| Fig. 5 | `elem_C` to the left is `elem` in `taype/examples/tutorial/tutorial.tpc`, and `elem_O` to the right is `elem` in `taype/examples/tutorial/tutorial.oil` | See note 1 |
+| Fig. 6 | `~@`, `~int`, `~s_int` and `~tape` in `taype/examples/common/prelude.oil` and `` `list `` in `taype/examples/tutorial/tutorial.oil` | The naming discrepancy will be discussed shortly |
+| Fig. 7 | `Expr`, `Def` and `Label` in `taype/src/Taype/Syntax.hs` | The `Expr` and `Def` data types are supersets of both surface Taype and core Taype syntax, using *locally nameless representation* for binders |
 | Fig. 8 | See [Coq formalization of the core calculus](#coq-formalization-of-the-core-calculus) | |
-| Section 3.4 | `taype/src/Taype/TypeChecker.hs` | This is the implementation of our bidirectional type checker |
-| Fig. 9 | `Expr`, `Ty` and `Def` in `taype/src/Oil/Syntax.hs` | Some operations do not have specific constructors in these data types: they are simply global names |
-| Fig. 10 | `toOilTy` in `taype/src/Oil/Translation.hs` | See note 3 |
-| Fig. 11 | `list`, `~list`, and `~case#list` in `taype/examples/tutorial/tutorial.oil` | |
-| Fig. 12 | `toOilADTDef` in `taype/src/Oil/Translation.hs` | |
-| Fig. 13 | `toOilExpr` in `taype/src/Oil/Translation.hs` | See note 3 |
-| Fig. 14 | `toOilSize` in `taype/src/Oil/Translation.hs` | |
-| Fig. 15 | `toOilDef` in `taype/src/Oil/Translation.hs` | |
+| Fig. 9 | See [Coq formalization of the core calculus](#coq-formalization-of-the-core-calculus) | |
+| Section 3.5 | `taype/src/Taype/TypeChecker.hs` | This is the implementation of our bidirectional type checker |
+| Fig. 10 | `Expr`, `Ty` and `Def` in `taype/src/Oil/Syntax.hs` | Some operations do not have specific constructors in these data types: they are simply global names |
+| Fig. 11 | `toOilTy` in `taype/src/Oil/Translation.hs` | |
+| Fig. 12 | `list`, `~list`, and `~case#list` in `taype/examples/tutorial/tutorial.oil` | See note 1 |
+| Fig. 13 | `toOilADTDef` in `taype/src/Oil/Translation.hs` | |
+| Fig. 14 | `toOilExpr` in `taype/src/Oil/Translation.hs` | |
+| Fig. 15 | `toOilSize` in `taype/src/Oil/Translation.hs` | |
+| Fig. 16 | `toOilDef` in `taype/src/Oil/Translation.hs` | |
 | Section 4.3 | `toOilProgram` in `taype/src/Oil/Translation.hs` | |
-| Fig. 16 | `taype/examples/record/record.tp` | The corresponding functions have the same or similar names as in the figure |
-| Section 5.2 (secure calculator) | `taype/examples/calculator/calculator.tp` and `taype/examples/calculator/test_calculator.ml` | |
-| Section 5.3 | `taype/examples/dtree/dtree.tp`, `taype/examples/tree/tree.tp` and `taype/examples/list/list.tp` | This is the Taype source code of the examples for the microbenchmarks |
-| Fig. 18 and 19 | See [Reproduce the experiment results](#reproduce-the-experiment-results) | |
+| Section 6.1 and Fig. 17 | `taype/examples/record/record.tp` | The corresponding functions have the same or similar names as in the figure |
+| Section 6.2 and Fig. 17 (`secure-calculator`) | `taype/examples/calculator/calculator.tp` and `taype/examples/calculator/test_calculator.ml` | |
+| Fig. 17 (`voting`) | `taype/examples/misc/misc.tp` | |
+| Fig. 17 (`k-means`) | `taype/examples/kmeans/kmeans.tp` | |
+| Section 6.3 | `taype/examples/dtree/dtree.tp`, `taype/examples/tree/tree.tp` and `taype/examples/list/list.tp` | This is the Taype source code of the examples for the microbenchmarks |
+| Fig. 19 (a) | `dtree` and `` `dtree_all `` in `taype/examples/dtree/dtree.tp` | |
+| Fig. 19 (b) | `` `dtree_max `` in `taype/examples/dtree/dtree.tp` | |
+| Fig. 19 (c) | `spine` and `` `dtree_spine `` in `taype/examples/dtree/dtree.tp` | |
+| Fig. 19 (d) | `spineF` and `` `dtree_spineF `` in `taype/examples/dtree/dtree.tp` | |
+| Fig. 20 and 21 | See [Reproduce the experiment results](#reproduce-the-experiment-results) | |
 
 Our main claim is that the security concern and the program logic can be cleanly
 separated in the Taype language. We can verify this claim by checking the Taype
@@ -163,23 +173,14 @@ functionalities (e.g., `list` type, `elem` and `insert` functions) are coded as
 conventional functional programs, independent of the security policies.
 
 Notes:
-1. The file `tutorial.tpc` is generated by the compiler, so you need to
-   re-generate it if you have cleaned the project. The programs in this file are
-   in administrative normal form (ANF), while the figure is not typeset in ANF
-   for readability, as clarified in the paper. Similarly, we have applied the
-   optimization described in section 5, so it does not correspond to the figure
-   exactly. That said, there are commandline options to disable optimization and
-   print it in a more readable form; see [Understand the compilation
-   pipeline](#understand-the-compilation-pipeline).
-2. Similar to `tutorial.tpc`, the file `tutorial.oil` is generated by the
-   compiler, in ANF and optimized. However, you may notice that even after
-   disabling optimization and ANF, the `elem` function does not correspond to
-   the figure exactly. This is because we have changed how arrow type is
-   translated since submission, and we will update the final version of the
-   paper to reflect this.
-3. We changed how arrow type and product type are translated since submission,
-   so the actual algorithm in the artifact is slightly different than the one
-   presented in the paper. The revised version of the paper will reflect this.
+1. The files with extensions `.tpc` and `.oil` are generated by the compiler, so
+   you need to re-generate them if you have cleaned the project. The programs in
+   these files are in administrative normal form (ANF), while the figures in the
+   paper are not typeset in ANF for readability, as clarified in the paper.
+   Similarly, we have applied the optimizations described in section 5, so they
+   do not correspond to the figures exactly. That said, there are commandline
+   options to disable optimization and print them in a more readable form; see
+   [Understand the compilation pipeline](#understand-the-compilation-pipeline).
 
 The following table summerizes the syntactic and naming discrepancies between
 the Taype source code and the listings in the paper.
@@ -220,7 +221,7 @@ for presentation purposes.
 
 ## Reproduce the experiment results
 
-To reproduce Fig. 18 and 19 in the paper, we first run all the microbenchmarks:
+To reproduce Fig. 20 and 21 in the paper, we first run all the microbenchmarks:
 
 ``` sh
 cd taype
@@ -231,20 +232,34 @@ cabal run shake -- --round=10 run
 ```
 
 This command will run each test case 10 times and take the average of the
-performance statistics. This can take a long time, so you may want to test fewer
+performance statistics. The results are written to the directory
+`examples/output`. This can take a long time, so you may want to test fewer
 rounds, although it sacrifices some accuracy:
 
 ``` sh
 cabal run shake -- --round=1 run
 ```
 
+Fig. 21 in the paper also includes performance results with the tupling
+optimization disabled (dotted lines). To reproduce this, run:
+
+```sh
+# Change --round option to save time
+TAYPE_FLAGS=--fno-tupling cabal run shake -- --out-dir=examples/output-no-tupling --round=10 run
+```
+
+This command will run the same tests but with tupling optimization disabled, and
+write the results to the directory `examples/output-no-tupling`. You may choose
+to not run this experiment and generate plots without the dotted lines.
+
 After it finishes, we open the Python notebook `taype/examples/figs.ipynb` in
 the browser with code-server. This notebook plots the performance statistics and
 also generates PDFs to the directory `taype/examples/figs` which we use for Fig.
-18 and 19. Note that this notebook generates more figures than the ones we
-present in the paper, such as performance of the plaintext driver and
-correlation table between the two drivers. The PDFs we use in the paper are
-`dtree-emp.pdf`, `tree-emp.pdf`, `list-emp-1.pdf` and `list-emp2.pdf`.
+20 and 21. The PDFs are `dtree-emp.pdf`, `tree-emp.pdf`, `list-emp-1.pdf` and
+`list-emp2.pdf`. If you choose to not run the tests with tupling disabled, you
+can modify the `configs` variable in the notebook by removing the `"no-tupling"`
+element from it (there are also comments in the notebook to help you with this).
+The plots it generates will now not include the dotted lines.
 
 You can simply view these plots inside the notebook. But if you prefer not to,
 you may run the Python script directly in the console, and copy the generated
@@ -257,22 +272,17 @@ python3 figs.py
 
 You are most likely not getting the exact same numbers as in the paper, because
 the performance of these oblivious programs vary, depending on the power of your
-machine, the supported cryptographic instructions of your CPUs and a lot of other
-factors, let alone running them in a docker container. However, you should
-observe similar curves and comparative results. Note that you will observe a
-different result for Fig. 19 (b), because we implemented an optimization that
-reduces the quadratic complexity to linear for these examples after submission.
-The final version of the paper will include this optimization.
+machine, the supported cryptographic instructions of your CPUs and a lot of
+other factors, let alone running them in a docker container. However, you should
+observe similar curves and comparative results.
 
 If you are interested in how the tests are done, see [Understand the
 test cases](#understand-the-test-cases).
 
 ## Coq formalization of the core calculus
 
-We have mechanized the Taype core calculus and its metatheory in Coq
-(`~/taype-theories`). The metatheory proofs do not correspond to anything in the
-submitted version of the paper, but the final version will include theorems of
-type soundness and obliviousness (our key security guarantee).
+We have formalized the core Taype calculus in Coq (`~/taype-theories`),
+including proofs of the soundness and obliviousness theorems.
 
 To validate the formalization, run:
 
@@ -292,27 +302,25 @@ formalization:
 
 | In paper | In artifact | Comment |
 | -------- | ----------- | ------- |
-| Fig. 6 | `expr`, `gdef`, `llabel`, `otval` and `oval` in `taype-theories/theories/lang_taype/syntax.v` | |
-| Fig. 7 | `step`, `ectx` and `lectx` in `taype-theories/theories/lang_taype/semantics.v` | |
-| Fig. 8 | `typing` in `taype-theories/theories/lang_taype/typing.v` | |
+| Fig. 7 | `expr`, `gdef`, `llabel`, `otval`, `oval` and `val` in `taype-theories/theories/lang_taype/syntax.v`, while weak value is `wval` in `taype-theories/theories/lang_taype/semantics.v` | |
+| Fig. 8 | `step`, `ectx` and `lectx` in `taype-theories/theories/lang_taype/semantics.v` | |
+| Fig. 9 | `typing` in `taype-theories/theories/lang_taype/typing.v` | |
+| Theorem 3.1 (Obliviousness) | `obliviousness` in `taype-theories/theories/lang_taype/metatheories.v` | |
 
-The main theorems of `soundness` and `obliviousness` are found in
-`taype-theories/theories/lang_taype/metatheories.v`. We will add these
-statements to the final version of the paper.
+The `soundness` theorem is also available in
+`taype-theories/theories/lang_taype/metatheories.v`.
 
 For simplicity, our mechanization of the core calculus differs
-slightly from the one presented in the paper. The final version of the
-paper will also clarify these differences:
-- The mechanization does not include integers as a base type, similar
-  to [Ye and Delaware, Oblivious Algebraic Data Types,
+slightly from the one presented in the paper:
+- The mechanization does not include integers as a base type, similar to [Ye and
+  Delaware, Oblivious Algebraic Data Types,
   POPL22](https://doi.org/10.1145/3498713)
-- The mechanization includes `fold` and `unfold` operations for
-  recursive ADTs, instead of the ML-style ADTs in the paper. The
-  equivalence between these two styles is well-known (cf. Chapter 20
-  of 'Types and Programming Languages').
-- The mechanization has a negative elimination form for product types
-  (i.e. projection) instead of positive elimination forms (i.e. case
-  analysis). These two styles are equivalent in our context.
+- The mechanization includes `fold` and `unfold` operations for recursive ADTs,
+  instead of the ML-style ADTs in the paper. The equivalence between these two
+  styles is well-known (cf. Chapter 20 of 'Types and Programming Languages').
+- The mechanization has a negative elimination form for product types (i.e.
+  projection) instead of positive elimination forms (i.e. case analysis). These
+  two styles are well-known to be equivalent in nonlinear type systems.
 - The mechanization uses *locally nameless representation* for
   binders.
 - Some notational differences which should be easy to disambiguate: we use
@@ -320,10 +328,10 @@ paper will also clarify these differences:
 
 ## Understand the compilation pipeline
 
-In this section, we discuss how we can inspect the different
-stages of the compilation pipeline (Fig. 1). We use the tutorial `taype/examples/tutorial.tp` as a running
-example, which includes a lot of comments on how to write functionalities and
-oblivious types.
+In this section, we discuss how we can inspect the different stages of the
+compilation pipeline (Fig. 1). We use the tutorial `taype/examples/tutorial.tp`
+as a running example, which includes a lot of comments on how to write
+functionalities and oblivious types.
 
 We compile this file by invoking the Taype compiler:
 
@@ -358,7 +366,13 @@ Now the generated files are much closer to the listings presented in the paper,
 and we can apply the translation rules in the paper to see how the generated
 code corresponds to the original one. However, do not run the experiments with
 these options on, as it would be much slower. You can learn about other options
-by running `cabal run taype -- --help`.
+by running `cabal run taype -- --help`. Specifically, we can generate the
+"prelude" which contains all definitions related to builtin types, including
+their leaky structures:
+
+``` sh
+cabal run taype -- --generate-prelude examples/common/prelude
+```
 
 The Taype compiler only generates OCaml code as libraries. To make a runnable
 application, we also have to write the "frontends" which handle IO and other
@@ -412,7 +426,7 @@ expected: false
 ```
 
 See the comments in `test_elem.ml` for more details. Note that the value of
-`bob` is absent (which is 6 in `test.bob.input`), as this is the input to the
+`bob` is absent (which is 6 in `test.bob.input`), since this is the input to the
 party Alice.
 
 If the executable successfully finishes the oblivious computation, it prints out
@@ -427,7 +441,7 @@ input. For example, the header of `test_elem.input.csv` is
 `public,alice,bob,expected`, while one of the test line is `10,(3 4 7),6,false`.
 The test runner will launch the test programs for each party and feed them the
 corresponding input. The output is then collected into another CSV file, e.g.,
-`examples/tutorial/test_elem.emp.output.csv`. We can invoke the test runner by:
+`examples/output/tutorial/test_elem.emp.output.csv`. We can invoke the test runner by:
 
 ``` sh
 cabal run shake -- run/tutorial
