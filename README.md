@@ -1,28 +1,30 @@
 # Getting Started Guide
 
-This is the artifact for the PLDI 2023 submission "Taype: a Policy-Agnostic
-Language for Oblivious Computation". This artifact is a docker image,
-which contains:
+This is the artifact for the PLDI 2023 paper ["Taype: a Policy-Agnostic Language
+for Oblivious Computation"](https://doi.org/10.1145/3591261). This artifact is a
+docker image, which contains:
 - This README file, located at `~/README.md`.
 - The docker file used to generate the docker image, located at `~/Dockerfile`.
-- The implementation of the Taype type checker and compiler, written in Haskell.
-  Located at `~/taype`.
-- Two drivers implementing the cryptographic primitives, as described in the
-  paper section 5.1: a plaintext driver and a cryptographic driver based on [Emp
-  toolkit](https://github.com/emp-toolkit/emp-tool). Located at
-  `~/taype-driver-plaintext` and `~/taype-driver-emp`.
-- Examples and experiments in the paper. As Taype programs are compiled to OCaml
-  libraries, our test cases are also written in OCaml, which handle IO and
-  invoke these libraries. Located at `~/taype/examples`.
+- The implementation of the Taype type checker and compiler, written
+  in Haskell, located at `~/taype`.
+- Two drivers implementing the cryptographic primitives, as described in Section
+  5 of the paper: a plaintext driver and a cryptographic driver based on [EMP
+  toolkit](https://github.com/emp-toolkit/emp-tool). The plaintext and
+  cryptographic drivers are located at `~/taype-driver-plaintext` and
+  `~/taype-driver-emp`, respectively.
+- All examples and experiments from the paper can be found in
+  `~/taype/examples`. Since Taype programs are compiled to OCaml libraries, our
+  test cases are also written in OCaml, which handle IO and invoke these
+  libraries.
 - Coq formalization of the Taype core calculus, based on [Ye and Delaware,
   Oblivious Algebraic Data Types, POPL22](https://doi.org/10.1145/3498713),
   located at `~/taype-theories`.
 - A [code-server](https://github.com/coder/code-server) (VS Code in the
   browser), so that we can view source code and interpret experiment results
-  simply in a browser (of course you do not have to). We pre-installed a few VS
-  Code extensions:
-  + Taype: for reading Taype source code. This (anonymized) extension provides
-    basic syntax highlighting for Taype, Core Taype and OIL
+  simply in a browser (this is not required, of course). We pre-installed a few
+  VS Code extensions:
+  + Taype: for reading Taype source code. This extension provides basic syntax
+    highlighting for Taype, Core Taype and OIL
   + Haskell: for reading source code of the Taype compiler
   + OCaml: for reading source code of the test cases and the generated OCaml
     code
@@ -30,12 +32,12 @@ which contains:
   + Python (with Jupyter notebook): for interpreting and plotting our experimental
     results
 
-All source code in the docker image has been pre-compiled. The clean version of
-the source code, this README file and the docker file are also available on
-Zenodo.
+All the implementations in the docker image have been pre-compiled. The clean
+version of the source code, this README file and the docker file are also
+available on [Zenodo](https://doi.org/10.5281/zenodo.7806981).
 
-To evaluate this artifact, first install [docker](https://www.docker.com/). Then
-download one of our docker images from Zenodo, depending on your machine's
+To evaluate this artifact, first install [docker](https://www.docker.com/), and
+then download one of our docker images from Zenodo, depending on your machine's
 architecture. We provide images for amd64 (i.e. x86-64) and arm64 (e.g., for
 Apple Silicon Mac). You need around 12 GB of storage space to load them, and at
 least 4 GB of RAM for the container to run the experiments.
@@ -63,12 +65,12 @@ docker exec -d taype code-server
 
 Now we can open the URL [localhost:8080](http://localhost:8080) (or
 [127.0.0.1:8080](http://127.0.0.1:8080)) in a browser to access VS Code. Note
-that some functionalities may not work if you use private mode or incognito
-mode. You may read this markdown file (`~/README.md`) with a nicely rendered
-preview. We did not pre-install the Haskell language server or the OCaml
-language server in the docker image, but you can install them (more instructions
-available in the [next section](#step-by-step-instructions)). You may install
-other extensions too.
+that some functionality may not work if you use private mode or incognito mode.
+You may read this markdown file (`~/README.md`) with a nicely rendered preview.
+We did not pre-install the Haskell language server or the OCaml language server
+in the docker image, but you can install them (more instructions are available
+in the [next section](#step-by-step-instructions)). You may install other
+extensions too.
 
 To access the shell in the container, run:
 
@@ -103,17 +105,17 @@ Python script for plotting.
 
 # Step-by-Step Instructions
 
-In this section, we will provide details on how the figures (claims) in the paper
+This section provides details on how the figures (claims) in the paper
 correspond to the implementation, how to reproduce the experimental results, how
 to use our tools, and the minor discrepancies between the implementation and the
-paper.
+paper's description.
 
 ## How to read code
 
 As mentioned in the previous section, you can read the source code in the
 browser with code-server. The docker image also comes with vim, if you prefer
-reading source code in the console. However, we do not have a syntax
-highlighting extension for vim yet.
+reading source code in the console, but we do not have a syntax highlighting
+extension for vim (yet).
 
 You may want to install Haskell and OCaml language server for richer IDE
 features such as jump to definition. You can install them by running:
@@ -177,8 +179,8 @@ Notes:
    you need to re-generate them if you have cleaned the project. The programs in
    these files are in administrative normal form (ANF), while the figures in the
    paper are not typeset in ANF for readability, as clarified in the paper.
-   Similarly, we have applied the optimizations described in section 5, so they
-   do not correspond to the figures exactly. That said, there are commandline
+   Similarly, we have applied the optimizations described in Section 5, so they
+   do not correspond to the figures exactly. That said, there are command line
    options to disable optimization and print them in a more readable form; see
    [Understand the compilation pipeline](#understand-the-compilation-pipeline).
 
@@ -210,8 +212,8 @@ the Taype source code and the listings in the paper.
 | `case` with tilde and subscript | use `#` and prefixed by `~` | the leaky case analysis function, e.g., in Fig. 11 is `~case#list` |
 | `if` with tilde | `~case#bool` | e.g., in Fig. 13 (a) |
 
-We should explain the discrepancy about `if` with tilde a bit more. In the
-actual implementation of OIL, we do not treat boolean as a builtin type but
+We need to explain the discrepancy about `if` with tilde in a bit more detail.
+The actual implementation of OIL does not treat boolean as a builtin type but
 another ADT, so the leaky version of the elimination (case analysis) of boolean
 is `~case#bool` instead of `~if`. In addition, the order of its branches are
 swapped (as we consider `False` the first constructor and then `True`), and we
@@ -272,8 +274,8 @@ python3 figs.py
 
 You are most likely not getting the exact same numbers as in the paper, because
 the performance of these oblivious programs vary, depending on the power of your
-machine, the supported cryptographic instructions of your CPUs and a lot of
-other factors, let alone running them in a docker container. However, you should
+machine, the cryptographic instructions supported by your CPU and a lot of other
+factors, let alone running them in a docker container. However, you should
 observe similar curves and comparative results.
 
 If you are interested in how the tests are done, see [Understand the
