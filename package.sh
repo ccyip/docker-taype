@@ -20,61 +20,31 @@ tar_ () {
 
 set -euxo pipefail
 
-# Clean up
+packages=(taype taype-driver-plaintext taype-driver-emp taype-vscode taype-theories)
 
-rm -rf taype taype-driver-plaintext taype-driver-emp taype-vscode taype-theories
-rm -f taype.tar.xz taype-driver-plaintext.tar.xz taype-driver-emp.tar.xz taype-vscode.tar.xz taype-theories.tar.xz
+# Clean up
+for p in ${packages[@]}; do
+    rm -rf $p
+    rm -f $p.tar.xz
+done
 
 # Download the latest source code
+for p in ${packages[@]}; do
+    if [ "$p" == "taype-theories" ]; then
+        fetch oadt
+        mv oadt taype-theories
+    else
+        fetch $p
+    fi
+done
 
-fetch taype
-fetch taype-driver-plaintext
-fetch taype-driver-emp
-fetch taype-vscode
-fetch oadt
-mv oadt taype-theories
-
-# Anonymize
-
-cd taype-vscode
-rm -rf .git .github
-sed_ '/Copyright/d' LICENSE
-sed_ 's/"repository": ".*"/"repository": "anonymous"/' package.json
-sed_ 's/"publisher": ".*"/"publisher": "anonymous"/' package.json
-cd ..
-
-cd taype-driver-plaintext
-rm -rf .git .github
-sed_ '/Copyright/d' LICENSE
-sed_ '/(maintainers|authors|source)/d' dune-project
-cd ..
-
-cd taype-driver-emp
-rm -rf .git .github
-sed_ '/Copyright/d' LICENSE
-sed_ '/(maintainers|authors|source)/d' dune-project
-cd ..
-
-cd taype
-rm -rf .git .github
-rm -f {TODO,CHANGELOG}.md
-sed_ '/Copyright/d' LICENSE
-sed_ '/^-- (Copyright|Maintainer)/d' $(find . -name '*.hs')
-sed_ '/^(author|maintainer|copyright)/d' *.cabal
-sed_ '/(github|hackage)/d' *.cabal *.md
-cd ..
-
-cd taype-theories
-rm -rf .git .github
-sed_ '/Copyright/d' LICENSE
-sed_ '/^(maintainer|homepage|dev-repo|bug-reports)/d' *.opam
-sed_ '/^author/,/\]/d' *.opam
-cd ..
+# Packaging
+for p in ${packages[@]}; do
+    rm -rf $p/.git
+done
+rm -f taype/{TODO,CHANGELOG}.md
 
 # Create tar balls
-
-tar_ taype
-tar_ taype-driver-plaintext
-tar_ taype-driver-emp
-tar_ taype-vscode
-tar_ taype-theories
+for p in ${packages[@]}; do
+    tar_ $p
+done
