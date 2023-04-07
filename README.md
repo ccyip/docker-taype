@@ -142,31 +142,31 @@ which we will summerize later.
 | Fig. 1 | See [Understand the compilation pipeline](#understand-the-compilation-pipeline) | |
 | Fig. 2 | `list` and `elem` in `taype/examples/tutorial/tutorial.tp` | This tutorial also includes an insertion function that is not presented in the paper |
 | Fig. 3 | `` `list `` in `taype/examples/tutorial/tutorial.tp`, and `patient`, `patient_view` and `` `patient `` in `taype/examples/record/record.tp` | |
-| Fig. 4 | `s_list`, `r_list` and `` `elem `` in `taype/examples/tutorial/tutorial.tp` | |
-| Fig. 5 | `elem_C` to the left is `elem` in `taype/examples/tutorial/tutorial.tpc`, and `elem_O` to the right is `elem` in `taype/examples/tutorial/tutorial.oil` | See note 1 |
-| Fig. 6 | `~@`, `~int`, `~s_int` and `~tape` in `taype/examples/common/prelude.oil` and `` `list `` in `taype/examples/tutorial/tutorial.oil` | The naming discrepancy will be discussed shortly |
-| Fig. 7 | `Expr`, `Def` and `Label` in `taype/src/Taype/Syntax.hs` | The `Expr` and `Def` data types are supersets of both surface Taype and core Taype syntax, using *locally nameless representation* for binders |
-| Fig. 8 | See [Coq formalization of the core calculus](#coq-formalization-of-the-core-calculus) | |
-| Fig. 9 | See [Coq formalization of the core calculus](#coq-formalization-of-the-core-calculus) | |
+| Fig. 5 | `s_list`, `r_list` and `` `elem `` in `taype/examples/tutorial/tutorial.tp` | |
+| Fig. 6 | `elem_C` to the left is `elem` in `taype/examples/tutorial/tutorial.tpc`, and `elem_O` to the right is `elem` in `taype/examples/tutorial/tutorial.oil` | See note 1 |
+| Fig. 7 | `~@`, `~int`, `~s_int` and `~tape` in `taype/examples/common/prelude.oil` and `` `list `` in `taype/examples/tutorial/tutorial.oil` | The naming discrepancy will be discussed shortly |
+| Fig. 8 | `Expr`, `Def` and `Label` in `taype/src/Taype/Syntax.hs` | The `Expr` and `Def` data types are supersets of both surface Taype and core Taype syntax, using *locally nameless representation* for binders |
+| Fig. 9 and Fig. 10 | See [Coq formalization of the core calculus](#coq-formalization-of-the-core-calculus) | |
 | Section 3.5 | `taype/src/Taype/TypeChecker.hs` | This is the implementation of our bidirectional type checker |
-| Fig. 10 | `Expr`, `Ty` and `Def` in `taype/src/Oil/Syntax.hs` | Some operations do not have specific constructors in these data types: they are simply global names |
-| Fig. 11 | `toOilTy` in `taype/src/Oil/Translation.hs` | |
-| Fig. 12 | `list`, `~list`, and `~case#list` in `taype/examples/tutorial/tutorial.oil` | See note 1 |
-| Fig. 13 | `toOilADTDef` in `taype/src/Oil/Translation.hs` | |
-| Fig. 14 | `toOilExpr` in `taype/src/Oil/Translation.hs` | |
-| Fig. 15 | `toOilSize` in `taype/src/Oil/Translation.hs` | |
-| Fig. 16 | `toOilDef` in `taype/src/Oil/Translation.hs` | |
+| Fig. 11 | `Expr`, `Ty` and `Def` in `taype/src/Oil/Syntax.hs` | Some operations do not have specific constructors in these data types: they are simply global names |
+| Fig. 12 | `toOilTy` in `taype/src/Oil/Translation.hs` | |
+| Fig. 13 | `toOilExpr` in `taype/src/Oil/Translation.hs` | |
+| Fig. 14 | `list`, `~list`, and `~case#list` in `taype/examples/tutorial/tutorial.oil` | See note 1 |
+| Fig. 15 | `toOilADTDef` in `taype/src/Oil/Translation.hs` | |
+| Fig. 16 | `toOilSize` in `taype/src/Oil/Translation.hs` | |
+| Fig. 17 | `` `inl `` in `taype/examples/common/prelude.oil` | |
+| Fig. 18 | `toOilDef` in `taype/src/Oil/Translation.hs` | |
 | Section 4.3 | `toOilProgram` in `taype/src/Oil/Translation.hs` | |
-| Section 6.1 and Fig. 17 | `taype/examples/record/record.tp` | The corresponding functions have the same or similar names as in the figure |
-| Section 6.2 and Fig. 17 (`secure-calculator`) | `taype/examples/calculator/calculator.tp` and `taype/examples/calculator/test_calculator.ml` | |
-| Fig. 17 (`voting`) | `taype/examples/misc/misc.tp` | |
-| Fig. 17 (`k-means`) | `taype/examples/kmeans/kmeans.tp` | |
+| Section 6.1 and Fig. 19 | `taype/examples/record/record.tp` | The corresponding functions have the same or similar names as in the figure |
+| Section 6.2 and Fig. 19 (`secure-calculator`) | `taype/examples/calculator/calculator.tp` and `taype/examples/calculator/test_calculator.ml` | |
+| Fig. 19 (`voting`) | `taype/examples/misc/misc.tp` | |
+| Fig. 19 (`k-means`) | `taype/examples/kmeans/kmeans.tp` | |
 | Section 6.3 | `taype/examples/dtree/dtree.tp`, `taype/examples/tree/tree.tp` and `taype/examples/list/list.tp` | This is the Taype source code of the examples for the microbenchmarks |
-| Fig. 19 (a) | `dtree` and `` `dtree_all `` in `taype/examples/dtree/dtree.tp` | |
-| Fig. 19 (b) | `` `dtree_max `` in `taype/examples/dtree/dtree.tp` | |
-| Fig. 19 (c) | `spine` and `` `dtree_spine `` in `taype/examples/dtree/dtree.tp` | |
-| Fig. 19 (d) | `spineF` and `` `dtree_spineF `` in `taype/examples/dtree/dtree.tp` | |
-| Fig. 20 and 21 | See [Reproduce the experiment results](#reproduce-the-experiment-results) | |
+| Fig. 21 (a) | `dtree` and `` `dtree_all `` in `taype/examples/dtree/dtree.tp` | |
+| Fig. 21 (b) | `` `dtree_max `` in `taype/examples/dtree/dtree.tp` | |
+| Fig. 21 (c) | `spine` and `` `dtree_spine `` in `taype/examples/dtree/dtree.tp` | |
+| Fig. 21 (d) | `spineF` and `` `dtree_spineF `` in `taype/examples/dtree/dtree.tp` | |
+| Fig. 22 and 23 | See [Reproduce the experiment results](#reproduce-the-experiment-results) | |
 
 Our main claim is that the security concern and the program logic can be cleanly
 separated in the Taype language. We can verify this claim by checking the Taype
@@ -207,9 +207,9 @@ the Taype source code and the listings in the paper.
 | `++` | `@concat` | array concatenation operator |
 | `_(_,_)` | `@slice` | array slicing operator |
 | `\mathbb{N}` | `int` | size type; we reuse the integer type for simplicity |
-| `prom` with subscript | use `#` and prefixed by `~` | the promotion constructor, e.g., `~list` in Fig. 11 has constructor `~prom#list` |
-| `if` with hat and subscript | use `#` and prefixed by `~` | the leaky if constructor, e.g., `~list` in Fig. 11 has constructor `~if#list` (admittedly it is a bit confusing that we use `~` here) |
-| `case` with tilde and subscript | use `#` and prefixed by `~` | the leaky case analysis function, e.g., in Fig. 11 is `~case#list` |
+| `prom` with subscript | use `#` and prefixed by `~` | the promotion constructor, e.g., `~list` in Fig. 14 has constructor `~prom#list` |
+| `if` with hat and subscript | use `#` and prefixed by `~` | the leaky if constructor, e.g., `~list` in Fig. 14 has constructor `~if#list` (admittedly it is a bit confusing that we use `~` here) |
+| `case` with tilde and subscript | use `#` and prefixed by `~` | the leaky case analysis function, e.g., in Fig. 14 is `~case#list` |
 | `if` with tilde | `~case#bool` | e.g., in Fig. 13 (a) |
 
 We need to explain the discrepancy about `if` with tilde in a bit more detail.
@@ -223,13 +223,13 @@ for presentation purposes.
 
 ## Reproduce the experiment results
 
-To reproduce Fig. 20 and 21 in the paper, we first run all the microbenchmarks:
+To reproduce Fig. 22 and 23 in the paper, we first run all the microbenchmarks:
 
 ``` sh
 cd taype
 # Build examples
 cabal run shake
-# Be warned: this command takes a long time (possibly more than an hour)
+# Run all tests. Be warned: this command takes a long time (possibly more than an hour)
 cabal run shake -- --round=10 run
 ```
 
@@ -242,7 +242,7 @@ rounds, although it sacrifices some accuracy:
 cabal run shake -- --round=1 run
 ```
 
-Fig. 21 in the paper also includes performance results with the tupling
+Fig. 23 in the paper also includes performance results with the tupling
 optimization disabled (dotted lines). To reproduce this, run:
 
 ```sh
@@ -257,11 +257,11 @@ to not run this experiment and generate plots without the dotted lines.
 After it finishes, we open the Python notebook `taype/examples/figs.ipynb` in
 the browser with code-server. This notebook plots the performance statistics and
 also generates PDFs to the directory `taype/examples/figs` which we use for Fig.
-20 and 21. The PDFs are `dtree-emp.pdf`, `tree-emp.pdf`, `list-emp-1.pdf` and
-`list-emp2.pdf`. If you choose to not run the tests with tupling disabled, you
-can modify the `configs` variable in the notebook by removing the `"no-tupling"`
-element from it (there are also comments in the notebook to help you with this).
-The plots it generates will now not include the dotted lines.
+22 and Fig. 23. The PDFs are `dtree-emp.pdf`, `tree-emp.pdf`, `list-emp-1.pdf`
+and `list-emp2.pdf`. If you choose to not run the tests with tupling disabled,
+you can modify the `configs` variable in the notebook by removing the
+`"no-tupling"` element from it (there are also comments in the notebook to help
+you with this). The plots it generates will now not include the dotted lines.
 
 You can simply view these plots inside the notebook. But if you prefer not to,
 you may run the Python script directly in the console, and copy the generated
@@ -304,9 +304,9 @@ formalization:
 
 | In paper | In artifact | Comment |
 | -------- | ----------- | ------- |
-| Fig. 7 | `expr`, `gdef`, `llabel`, `otval`, `oval` and `val` in `taype-theories/theories/lang_taype/syntax.v`, while weak value is `wval` in `taype-theories/theories/lang_taype/semantics.v` | |
-| Fig. 8 | `step`, `ectx` and `lectx` in `taype-theories/theories/lang_taype/semantics.v` | |
-| Fig. 9 | `typing` in `taype-theories/theories/lang_taype/typing.v` | |
+| Fig. 8 | `expr`, `gdef`, `llabel`, `otval`, `oval` and `val` in `taype-theories/theories/lang_taype/syntax.v`, while weak value is `wval` in `taype-theories/theories/lang_taype/semantics.v` | |
+| Fig. 9 | `step`, `ectx` and `lectx` in `taype-theories/theories/lang_taype/semantics.v` | |
+| Fig. 10 | `typing` in `taype-theories/theories/lang_taype/typing.v` | |
 | Theorem 3.1 (Obliviousness) | `obliviousness` in `taype-theories/theories/lang_taype/metatheories.v` | |
 
 The `soundness` theorem is also available in
@@ -319,7 +319,7 @@ slightly from the one presented in the paper:
   POPL22](https://doi.org/10.1145/3498713)
 - The mechanization includes `fold` and `unfold` operations for recursive ADTs,
   instead of the ML-style ADTs in the paper. The equivalence between these two
-  styles is well-known (cf. Chapter 20 of 'Types and Programming Languages').
+  styles is well-known (cf. Chapter 20 of "Types and Programming Languages").
 - The mechanization has a negative elimination form for product types (i.e.
   projection) instead of positive elimination forms (i.e. case analysis). These
   two styles are well-known to be equivalent in nonlinear type systems.
@@ -369,8 +369,8 @@ and we can apply the translation rules in the paper to see how the generated
 code corresponds to the original one. However, do not run the experiments with
 these options on, as it would be much slower. You can learn about other options
 by running `cabal run taype -- --help`. Specifically, we can generate the
-"prelude" which contains all definitions related to builtin types, including
-their leaky structures:
+"prelude" file (`prelude.oil`) which contains all definitions related to builtin
+types, including their leaky structures:
 
 ``` sh
 cabal run taype -- --generate-prelude examples/common/prelude
