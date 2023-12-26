@@ -64,7 +64,7 @@ WORKDIR /home/${guest}
 
 # Install code-server extensions and configuration
 RUN mkdir -p .config/code-server
-COPY <<EOT .config/code-server/config.yaml
+COPY --chown=${guest}:${guest} <<EOT .config/code-server/config.yaml
 bind-addr: 0.0.0.0:8080
 auth: none
 cert: false
@@ -78,7 +78,7 @@ RUN code-server --install-extension ms-python.python | grep 'was successfully in
 RUN code-server --install-extension .local/taype.vsix | grep 'was successfully installed'
 
 # Setup shell environment
-COPY <<EOT .setup
+COPY --chown=${guest}:${guest} <<EOT .setup
 if [ -z "\$SETUP_TAYPSI_DONE" ]; then
   export SETUP_TAYPSI_DONE=1
 else
