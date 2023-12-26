@@ -2,16 +2,15 @@ FROM node:slim as vs-builder
 
 WORKDIR /root
 RUN npm install -g @vscode/vsce
-ADD taype-vscode.tar.xz .
-RUN cd taype-vscode && vsce package -o /root/taype.vsix
+COPY taype-vscode .
+RUN vsce package -o taype.vsix
 
 
 FROM python:3-slim as py-builder
 
 WORKDIR /root
 RUN pip install nbconvert
-ADD taypsi.tar.xz .
-RUN cp taypsi/examples/figs.ipynb .
+COPY taypsi/examples/figs.ipynb .
 # Convert jupyter notebook to python script, so that we can still generate latex
 # without starting a jupyter session
 RUN jupyter nbconvert --to script figs.ipynb
@@ -29,7 +28,7 @@ RUN apt-get update -y -q \
     build-essential \
     curl \
     libffi-dev \
-    libffi7 \
+    libffi8 \
     libgmp-dev \
     libgmp10 \
     libncurses-dev \
@@ -64,11 +63,12 @@ USER ${guest}
 WORKDIR /home/${guest}
 
 # Install code-server extensions and configuration
-RUN mkdir -p .config/code-server \
-  && cd .config/code-server \
-  && echo 'bind-addr: 0.0.0.0:8080' >> config.yaml \
-  && echo 'auth: none' >> config.yaml \
-  && echo 'cert: false' >> config.yaml
+RUN mkdir -p .config/code-server
+COPY <<EOT .config/code-server/config.yaml
+bind-addr: 0.0.0.0:8080
+auth: none
+cert: false
+EOT
 RUN mkdir .local
 COPY --from=vs-builder --chown=${guest}:${guest} /root/taype.vsix .local
 RUN code-server --install-extension haskell.haskell | grep 'was successfully installed'
@@ -78,8 +78,8 @@ RUN code-server --install-extension ms-python.python | grep 'was successfully in
 RUN code-server --install-extension .local/taype.vsix | grep 'was successfully installed'
 
 # Setup shell environment
-COPY <<EOT ~/.setup
-if [ -z "$SETUP_TAYPSI_DONE" ]; then
+COPY <<EOT .setup
+if [ -z "\$SETUP_TAYPSI_DONE" ]; then
   export SETUP_TAYPSI_DONE=1
 else
   return
@@ -107,14 +107,17 @@ RUN opam init -a -y --bare --disable-sandboxing --dot-profile="~/.setup" \
     sexplib yojson ppx_deriving z3
 
 # Copy and build taype-drivers
-ADD --chown=${guest}:${guest} taype-drivers.tar.xz .
+COPY --chown=${guest}:${guest} taype-drivers taype-drivers
+RUN cd taype-drivers/emp/ffi \
+  && sudo make install
+# Fix linker
+RUN sudo /sbin/ldconfig
 RUN cd taype-drivers \
-  && (cd emp/ffi && sudo make install) \
   && dune build \
   && dune install
 
 # Copy and build taype-drivers-legacy
-ADD --chown=${guest}:${guest} taype-drivers-legacy.tar.xz .
+COPY --chown=${guest}:${guest} taype-drivers-legacy taype-drivers-legacy
 RUN cd taype-drivers-legacy/taype-driver-plaintext \
   && dune build \
   && dune install
@@ -122,30 +125,27 @@ RUN cd taype-drivers-legacy/taype-driver-emp \
   && dune build \
   && dune install
 
-# Fix linker
-RUN sudo /sbin/ldconfig
-
 # Copy and build taypsi-theories (Coq formalization)
-ADD --chown=${guest}:${guest} taypsi-theories.tar.xz .
+COPY --chown=${guest}:${guest} taypsi-theories taypsi-theories
 RUN cd taypsi-theories && opam install -y --deps-only .
 RUN cd taypsi-theories && make -j$(nproc)
 
 # Copy and build taype-pldi
-ADD --chown=${guest}:${guest} taype-pldi.tar.xz .
+COPY --chown=${guest}:${guest} taype-pldi taype-pldi
 RUN cd taype-pldi \
   && cabal update \
   && cabal build \
   && cabal run shake
 
 # Copy and build taype-sa
-ADD --chown=${guest}:${guest} taype-sa.tar.xz .
+COPY --chown=${guest}:${guest} taype-sa taype-sa
 RUN cd taype-sa \
   && cabal update \
   && cabal build \
   && cabal run shake
 
 # Copy and build taypsi
-ADD --chown=${guest}:${guest} taypsi.tar.xz .
+COPY --chown=${guest}:${guest} taypsi taypsi
 RUN cd taypsi \
   && (cd solver && dune build) \
   && cabal update \
