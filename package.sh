@@ -75,7 +75,8 @@ cd ..
 cd taypsi-theories
 rm -rf .github doc
 sed_ '/Qianchuan/d' LICENSE
-sed_ '/(ccyip|yeqianchuan|Qianchuan|Benjamin)/d' *.opam
+sed_ '/(ccyip|Qianchuan|Benjamin)/d' *.opam
+sed_ 's/yeqianchuan@gmail.com/anonymous/' *.opam
 cd ..
 
 cd taype-pldi
