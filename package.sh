@@ -1,9 +1,12 @@
 #!/bin/sh
 
 fetch() {
+    REPO="$1"
+    shift
     git clone \
-        -b pldi23 --recursive --depth 1 --shallow-submodules \
-        git@github.com:ccyip/$1.git
+        "$@" --recursive --depth 1 --shallow-submodules \
+        file://$HOME/Projects/"$REPO"
+        # https://github.com/ccyip/"$REPO".git
 }
 
 sed_() {
@@ -20,31 +23,91 @@ tar_ () {
 
 set -euxo pipefail
 
-packages=(taype taype-driver-plaintext taype-driver-emp taype-vscode taype-theories)
+packages=(taypsi taype-drivers taype-vscode taypsi-theories taype-pldi taype-sa taype-drivers-legacy)
 
 # Clean up
 for p in ${packages[@]}; do
-    rm -rf $p
-    rm -f $p.tar.xz
+    rm -rf "$p"
+    rm -f "$p".tar.xz
 done
 
 # Download the latest source code
-for p in ${packages[@]}; do
-    if [ "$p" == "taype-theories" ]; then
-        fetch oadt
-        mv oadt taype-theories
-    else
-        fetch $p
-    fi
-done
+fetch taype -b oopsla24
+mv taype taypsi
+
+fetch taype-drivers -b oopsla24
+
+fetch taype-vscode -b oopsla24
+
+fetch oadt -b oopsla24
+mv oadt taypsi-theories
+
+fetch taype -b tape
+mv taype taype-pldi
+
+fetch taype -b tape-sa
+mv taype taype-sa
+
+mkdir -p taype-drivers-legacy
+cd taype-drivers-legacy
+fetch taype-driver-plaintext
+fetch taype-driver-emp
+cd ..
+
+# Anonymize
+cd taypsi
+rm -rf .github
+sed_ '/Qianchuan/d' LICENSE *.cabal *.md $(find . -name '*.hs')
+sed_ '/(ccyip|hackage)/d' *.cabal *.md
+cd ..
+
+cd taype-drivers
+sed_ '/Qianchuan/d' LICENSE dune-project
+sed_ '/ccyip/d' dune-project
+cd ..
+
+cd taype-vscode
+sed_ '/Qianchuan/d' LICENSE
+sed_ 's/"repository": ".*"/"repository": "anonymous"/' package.json
+sed_ 's/"publisher": ".*"/"publisher": "anonymous"/' package.json
+cd ..
+
+cd taypsi-theories
+rm -rf .github doc
+sed_ '/Qianchuan/d' LICENSE
+sed_ '/(ccyip|yeqianchuan|Qianchuan|Benjamin)/d' *.opam
+cd ..
+
+cd taype-pldi
+rm -rf .github
+sed_ '/Qianchuan/d' LICENSE *.cabal *.md $(find . -name '*.hs')
+sed_ '/(ccyip|hackage)/d' *.cabal *.md
+cd ..
+
+cd taype-sa
+rm -rf .github
+sed_ '/Qianchuan/d' LICENSE *.cabal *.md $(find . -name '*.hs')
+sed_ '/(ccyip|hackage)/d' *.cabal *.md
+cd ..
+
+cd taype-drivers-legacy
+cd taype-driver-plaintext
+sed_ '/Qianchuan/d' LICENSE dune-project
+sed_ '/ccyip/d' dune-project
+cd ..
+cd taype-driver-emp
+sed_ '/Qianchuan/d' LICENSE dune-project
+sed_ '/ccyip/d' dune-project
+cd ..
+cd ..
 
 # Packaging
 for p in ${packages[@]}; do
-    rm -rf $p/.git
+    find "$p" -name .git -exec rm -rf {} +
 done
-rm -f taype/{TODO,CHANGELOG}.md
+rm -rf taype-drivers-legacy/taype-driver-emp/extern
 
 # Create tar balls
 for p in ${packages[@]}; do
-    tar_ $p
+    tar_ "$p"
 done

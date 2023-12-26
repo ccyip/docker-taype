@@ -2,16 +2,17 @@ FROM node:slim as vs-builder
 
 WORKDIR /root
 RUN npm install -g @vscode/vsce
-COPY taype-vscode .
-RUN vsce package -o taype.vsix
+ADD taype-vscode.tar.xz .
+RUN cd taype-vscode && vsce package -o /root/taype.vsix
 
 
 FROM python:3-slim as py-builder
 
 WORKDIR /root
 RUN pip install nbconvert
-COPY taype/examples/figs.ipynb .
-# Convert jupyter notebook to python script, so that we can still generate pdfs
+ADD taypsi.tar.xz .
+RUN cp taypsi/examples/figs.ipynb .
+# Convert jupyter notebook to python script, so that we can still generate latex
 # without starting a jupyter session
 RUN jupyter nbconvert --to script figs.ipynb
 
@@ -42,8 +43,9 @@ RUN apt-get update -y -q \
     cmake \
     libssl-dev \
     vim \
-    python3-dev \
-    python3-pip
+    python3-pandas \
+    python3-jinja2 \
+    python3-ipykernel
 
 # Install opam
 RUN echo /usr/local/bin | \
@@ -51,9 +53,6 @@ RUN echo /usr/local/bin | \
 
 # Install code-server
 RUN curl -fsSL https://code-server.dev/install.sh | sh
-
-# Install python packages for ploting
-RUN pip install panda numpy seaborn ipykernel jinja2
 
 RUN rm -rf ~/.cache
 
@@ -74,58 +73,85 @@ RUN mkdir .local
 COPY --from=vs-builder --chown=${guest}:${guest} /root/taype.vsix .local
 RUN code-server --install-extension haskell.haskell | grep 'was successfully installed'
 RUN code-server --install-extension ocamllabs.ocaml-platform | grep 'was successfully installed'
-RUN code-server --install-extension maximedenes.vscoq | grep 'was successfully installed'
+RUN code-server --install-extension coq-community.vscoq1 | grep 'was successfully installed'
 RUN code-server --install-extension ms-python.python | grep 'was successfully installed'
 RUN code-server --install-extension .local/taype.vsix | grep 'was successfully installed'
 
+# Setup shell environment
+COPY <<EOT ~/.setup
+if [ -z "$SETUP_TAYPSI_DONE" ]; then
+  export SETUP_TAYPSI_DONE=1
+else
+  return
+fi
+
+EOT
+RUN echo 'source "$HOME/.setup"' >> ~/.profile
+RUN echo 'source "$HOME/.setup"' >> ~/.bashrc
+
 # Install the Haskell toolchain
 ENV BOOTSTRAP_HASKELL_NONINTERACTIVE=1
-ENV BOOTSTRAP_HASKELL_GHC_VERSION=9.2.5
-ENV BOOTSTRAP_HASKELL_CABAL_VERSION=3.8.1.0
+ENV BOOTSTRAP_HASKELL_GHC_VERSION=9.4.7
+ENV BOOTSTRAP_HASKELL_CABAL_VERSION=3.10.2.0
 ENV BOOTSTRAP_HASKELL_INSTALL_NO_STACK=1
 RUN curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh
-RUN echo '[ -f "$HOME/.ghcup/env" ] && source "$HOME/.ghcup/env"' >> ~/.profile
+RUN echo '[ -f "$HOME/.ghcup/env" ] && source "$HOME/.ghcup/env"' >> ~/.setup
 
 # Install the OCaml toolchain
-RUN opam init -a -y --bare --disable-sandboxing --dot-profile="~/.profile" \
+RUN opam init -a -y --bare --disable-sandboxing --dot-profile="~/.setup" \
   && opam switch create default --package="ocaml-variants.4.14.1+options,ocaml-option-flambda" \
   && eval $(opam env) \
   && opam repo add coq-released https://coq.inria.fr/opam/released \
   && opam update -y \
-  && opam install -y dune ctypes sexplib
+  && opam install -y dune ctypes containers containers-data \
+    sexplib yojson ppx_deriving z3
 
-# Copy and build taype-driver-plaintext
-COPY --chown=${guest}:${guest} taype-driver-plaintext taype-driver-plaintext
-RUN cd taype-driver-plaintext \
+# Copy and build taype-drivers
+ADD --chown=${guest}:${guest} taype-drivers.tar.xz .
+RUN cd taype-drivers \
+  && (cd emp/ffi && sudo make install) \
   && dune build \
   && dune install
 
-# Copy and build taype-driver-emp
-COPY --chown=${guest}:${guest} taype-driver-emp taype-driver-emp
-RUN cd taype-driver-emp \
-  && mkdir extern/{emp-tool,emp-ot,emp-sh2pc}/build \
-  && mkdir src/build \
-  && (cd extern/emp-tool/build && cmake .. && make -j$(nproc) && sudo make install) \
-  && (cd extern/emp-ot/build && cmake .. && make -j$(nproc) && sudo make install) \
-  && (cd extern/emp-sh2pc/build && cmake .. && make -j$(nproc) && sudo make install) \
-  && (cd src/build && cmake .. && make -j$(nproc) && sudo make install) \
+# Copy and build taype-drivers-legacy
+ADD --chown=${guest}:${guest} taype-drivers-legacy.tar.xz .
+RUN cd taype-drivers-legacy/taype-driver-plaintext \
   && dune build \
   && dune install
+RUN cd taype-drivers-legacy/taype-driver-emp \
+  && dune build \
+  && dune install
+
 # Fix linker
 RUN sudo /sbin/ldconfig
 
-# Copy and build taype (compiler and examples)
-COPY --chown=${guest}:${guest} taype taype
-RUN cd taype \
+# Copy and build taypsi-theories (Coq formalization)
+ADD --chown=${guest}:${guest} taypsi-theories.tar.xz .
+RUN cd taypsi-theories && opam install -y --deps-only .
+RUN cd taypsi-theories && make -j$(nproc)
+
+# Copy and build taype-pldi
+ADD --chown=${guest}:${guest} taype-pldi.tar.xz .
+RUN cd taype-pldi \
   && cabal update \
   && cabal build \
   && cabal run shake
-COPY --from=py-builder --chown=${guest}:${guest} /root/figs.py taype/examples
 
-# Copy and build taype-theories (Coq formalization)
-COPY --chown=${guest}:${guest} taype-theories taype-theories
-RUN cd taype-theories && opam install -y --deps-only .
-RUN cd taype-theories && make -j$(nproc)
+# Copy and build taype-sa
+ADD --chown=${guest}:${guest} taype-sa.tar.xz .
+RUN cd taype-sa \
+  && cabal update \
+  && cabal build \
+  && cabal run shake
+
+# Copy and build taypsi
+ADD --chown=${guest}:${guest} taypsi.tar.xz .
+RUN cd taypsi \
+  && (cd solver && dune build) \
+  && cabal update \
+  && cabal build \
+  && cabal run shake
+COPY --from=py-builder --chown=${guest}:${guest} /root/figs.py taypsi/examples
 
 # Copy other files
 COPY --chown=${guest}:${guest} Dockerfile README.md ./
