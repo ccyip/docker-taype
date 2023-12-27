@@ -42,9 +42,8 @@ RUN apt-get update -y -q \
     cmake \
     libssl-dev \
     vim \
-    python3-pandas \
-    python3-jinja2 \
-    python3-ipykernel
+    python3-dev \
+    python3-pip
 
 # Install opam
 RUN echo /usr/local/bin | \
@@ -52,6 +51,9 @@ RUN echo /usr/local/bin | \
 
 # Install code-server
 RUN curl -fsSL https://code-server.dev/install.sh | sh
+
+# Install python packages for generating figures used in the paper
+RUN pip install --break-system-packages pandas numpy jinja2 ipykernel
 
 RUN rm -rf ~/.cache
 
@@ -154,7 +156,7 @@ RUN cd taypsi \
 COPY --from=py-builder --chown=${guest}:${guest} /root/figs.py taypsi/examples
 
 # Copy other files
-COPY --chown=${guest}:${guest} Dockerfile README.md ./
+COPY --chown=${guest}:${guest} Dockerfile README.md bench.sh ./
 
 # Remove some cache to save space
 RUN rm -rf ~/.ghcup/cache
