@@ -155,8 +155,26 @@ RUN cd taypsi \
   && cabal run shake
 COPY --from=py-builder --chown=${guest}:${guest} /root/figs.py taypsi/examples
 
+# Add a benchmark script
+COPY --chown=${guest}:${guest} --chmod=755 <<EOT bench.sh
+#!/bin/bash
+
+cd ~/taype-pldi
+./bench.sh
+
+cd ~/taype-sa
+./bench.sh
+
+cd ~/taypsi
+./bench.sh
+cd examples
+cp -r ~/taype-pldi/examples/output-old .
+cp -r ~/taype-sa/examples/output-old-sa .
+python3 figs.py
+EOT
+
 # Copy other files
-COPY --chown=${guest}:${guest} Dockerfile README.md bench.sh ./
+COPY --chown=${guest}:${guest} Dockerfile README.md ./
 
 # Remove some cache to save space
 RUN rm -rf ~/.ghcup/cache
