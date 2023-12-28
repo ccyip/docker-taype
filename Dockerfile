@@ -160,13 +160,13 @@ COPY --chown=${guest}:${guest} --chmod=755 <<EOT bench.sh
 #!/bin/bash
 
 cd ~/taype-pldi
-./bench.sh
+./bench.sh \$1
 
 cd ~/taype-sa
-./bench.sh
+./bench.sh \$1
 
 cd ~/taypsi
-./bench.sh
+./bench.sh \$1
 cd examples
 cp -r ~/taype-pldi/examples/output-old .
 cp -r ~/taype-sa/examples/output-old-sa .
