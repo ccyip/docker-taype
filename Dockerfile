@@ -159,6 +159,8 @@ COPY --from=py-builder --chown=${guest}:${guest} /root/figs.py taypsi/examples
 COPY --chown=${guest}:${guest} --chmod=755 <<EOT bench.sh
 #!/bin/bash
 
+set -eo pipefail
+
 cd ~/taype-pldi
 ./bench.sh \$1
 
