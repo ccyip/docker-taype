@@ -1,31 +1,70 @@
+# Introduction
+
+This is the artifact for the OOPSLA 2024 paper "Taypsi: Static Enforcement of
+Privacy Policies for Policy-Agnostic Oblivious Computation". It provides the
+source code of the Taypsi language and the lifting algorithm described in the
+paper, Coq formalization of Taypsi core calculus in Section 3, and benchmarks
+for reproducing the experimental results in Section 6.
+
+We have made the following claims in the paper.
+- The presented core calculus is mechanized in Coq, including the proofs of
+  soundness and oblivious theorems. See [Coq formalization of the core
+  calculus](#coq-formalization-of-the-core-calculus) for instructions on how to
+  validate this claim.
+- Taypsi performs considerably better than Taype on many benchmarks, and works
+  roughly as well on the remainer. In addition, the compilation overhead is
+  reasonable. See [Reproduce the experimental
+  results](#reproduce-the-experimental-results) for instructions on how to
+  reproduce the experimental results that support this claim.
+
+The running example in Section 2 is also available in the artifact. See
+[Correspondence between paper and
+artifact](#correspondence-between-paper-and-artifact).
+
+# Hardware Dependencies
+
+We provide the artifact as docker images for amd64 (x86-64) and arm64
+architectures. Thus, any hardware of these two architectures should work, as
+long as the installed operating system is supported by docker. However, to fully
+reproduce our experimental results, you need at least 8 GB of memory. You also
+need around 14 GB of storage space to load the docker image (after downloading
+it).
+
+We have tested this artifact on a x86-64 Linux box and an Apple Silicon (M1)
+Mac.
+
 # Getting Started Guide
 
-This is the artifact for the OOPSLA 2024 submission "Taypsi: Static Enforcement
-of Privacy Policies for Policy-Agnostic Oblivious Computation". This artifact is
-a docker image, which contains:
+This artifact is a docker image, which contains:
 - This README file, located at `~/README.md`.
-- The docker file used to generate the docker image, located at `~/Dockerfile`.
+- The docker file used to generate the docker images, located at `~/Dockerfile`.
 - The implementation of the Taypsi type checker and compiler, based on [Taype
-  (PLDI23)](https://doi.org/10.1145/3591261), located at `~/taypsi`.
+  (PLDI23)](https://doi.org/10.1145/3591261), located at `~/taypsi`. ([Github
+  repository](https://github.com/ccyip/taype/tree/oopsla24))
 - The implementation of the Taype type checker and compiler (PLDI23), located at
   `~/taype-pldi`. It is extended with additional benchmarks for the comparison
-  in the evaluation section.
+  in the evaluation section. ([Github
+  repository](https://github.com/ccyip/taype/tree/tape))
 - The implementation of a version of Taype with an additional optimization
   (smart array) for a fairer comparison, located at `~/taype-sa`. Note that the
   result of this experiment is not in the current submission, but will be
-  included in the final version of the paper.
+  included in the final version of the paper. ([Github
+  repository](https://github.com/ccyip/taype/tree/tape-sa))
 - All examples and experiments from the paper, located at `~/taypsi/examples`
   (correspondingly `~/taype-pldi/examples` and `~/taype-sa/examples`).
-- Coq formalization of the Taypsi core calculus, based on [ Oblivious Algebraic
+- Coq formalization of the Taypsi core calculus, based on [Oblivious Algebraic
   Data Types (POPL22)](https://doi.org/10.1145/3498713), located at
-  `~/taypsi-theories`.
+  `~/taypsi-theories`. ([Github
+  repository](https://github.com/ccyip/oadt/tree/oopsla24))
 - The source code of drivers that implement the cryptographic primitives and
   oblivious array, located at `~/taype-drivers`. This implementation includes
   the smart array optimization, and is used by Taypsi (`~/taypsi`) and the
-  version of Taype with smart array optimization (`~/taype-sa`).
+  version of Taype with smart array optimization (`~/taype-sa`). ([Github
+  repository](https://github.com/ccyip/taype-drivers/tree/oopsla24))
 - The source code of the drivers from Taype (PLDI23), located at
   `~/taype-drivers-legacy`. This implementation is used by Taype
-  (`~/taype-pldi`).
+  (`~/taype-pldi`). ([Github
+  repository](https://github.com/ccyip/taype-driver-emp))
 - A [code-server](https://github.com/coder/code-server) (VS Code in the
   browser), so that we can view source code simply in a browser (this is not
   required, of course). We pre-installed a few VS Code extensions:
@@ -37,7 +76,7 @@ a docker image, which contains:
     which is implemented in Haskell.
   + OCaml: for reading source code of the generated OCaml programs, test cases
     and part of the source code of Taypsi. Since Taypsi programs are compiled to
-    OCaml libraries, our test cases are also written in OCaml, which handle IO
+    OCaml libraries, our test cases are also written in OCaml, which handle I/O
     and invoke these libraries. The constraint solver presented in the paper is
     also implemented in OCaml.
   + VsCoq: for reading Coq formalization.
@@ -46,7 +85,7 @@ a docker image, which contains:
 
 All the implementations in the docker image have been pre-compiled. The clean
 version of the source code, this README file and the docker file are also
-available on [Zenodo](TODO).
+available on [Zenodo](https://doi.org/10.5281/zenodo.10443796).
 
 To evaluate this artifact, first install [docker](https://www.docker.com/), and
 then download one of our docker images from Zenodo, depending on your machine's
@@ -172,8 +211,7 @@ Notes:
    Constraint solver is implemented in `taypsi/solver/bin/solver.ml` and
    `taypsi/solver/lib/solver.ml`. Elaboration of typed macros is `elabPpx` in
    `taypsi/src/Taype/TypeChecker.hs`.
-2.  The concrete syntax of Taypsi is defined in `taypsi/src/Taype/Syntax.hs`.
-   The source code of the bidirectional type checker is in
+2. The source code of the bidirectional type checker is in
    `taypsi/src/Taype/TypeChecker.hs`, and the lifting procedure is in
    `taypsi/src/Taype/Lift.hs`, and the translation to OIL is in
    `taypsi/src/Oil/Translation.hs`. The smart array optimization is defined in
@@ -264,11 +302,11 @@ that runs all benchmarks.
 
 This script will run each test case 5 times, take the average of the results,
 and write them to the directories `taypsi/examples/output-*`. Finally, this
-script will execute `taypsi/examples/figs.py` to generate LaTeX tables in
+script will execute `taypsi/examples/figs.py` to generate LaTeX tables to
 `taypsi/examples/figs` for the figures in Section 6 and appendix.
 
 Be warned that this script takes a long time to run: maybe up to 2 hours
-depending on your machines. You can choose to test fewer rounds, by specifying
+depending on your machine. You can choose to test fewer rounds, by specifying
 the number of rounds to the script. This would of course produce less accurate
 results, and it can still take up to 1 hour to run.
 
@@ -278,7 +316,8 @@ results, and it can still take up to 1 hour to run.
 ```
 
 You can inspect this script and the scripts it invokes (`bench.sh` in `taypsi`,
-`taype-pldi` and `taype-sa`) to understand what experiments are performed.
+`taype-pldi` and `taype-sa`) to understand what benchmark suites are tested with
+what options.
 
 The following table sumerizes the correspondence between the generated LaTeX
 tables and the figures in Section 6. There are also other LaTeX tables generated
@@ -297,26 +336,29 @@ Note that, compared to Fig. 17 in the submission,
 extra column (Taype-SA), which reports the performance numbers of a version of
 Taype with smart array optimization. The column (Taypsi) also includes the
 percentage of running time relative to this version of Taype. The goal is to
-compare Taype (PLDI23) and Taypsi presented in this paper in a fairer way, by
-having comparable optimizations in both approaches to maximize their potential.
-This result will be included in the final version of the paper.
+compare Taype (PLDI23) and Taypsi in a fairer way, by having comparable
+optimizations in both approaches to maximize their potential. This result will
+be included in the final version of the paper.
 
 You are most likely not getting the exact same numbers as in the paper, because
 the performance of these benchmarks vary, depending on the power of your
 machine, the cryptographic instructions supported by your CPU and a lot of other
 factors, let alone running them in a docker container. However, you should
-observe similar comparative results. For the additional column (Taype-SA) in
-Fig. 17, all benchmarks that fail in Taype should also fail in Taype-SA, except
-for `path_16`, and you should observe comparable or better performance numbers
-of Taypsi over Taype-SA for other benchmarks. In addtion, we have optimized the
-constraint solver since the submission, so all benchmark suits in Fig. 19 should
-be compiled under a few seconds (e.g., K-means should take only 2 seconds now,
-instead of 12 seconds in the submission).
+observe similar comparative results: Taypsi performs significantly better than
+Taype on many benchmarks, while doing roughly as well on the remainder.
+
+For the additional column (Taype-SA), all benchmarks that fail in Taype should
+also fail in Taype-SA, except for `path_16`, and you should observe comparable
+or better performance numbers of Taypsi over Taype-SA for other benchmarks. In
+addtion, we have optimized the constraint solver since the submission, so all
+benchmark suites in Fig. 19 should be compiled under a few seconds (e.g.,
+K-means should take only 2 seconds now, instead of 12 seconds in the
+submission).
 
 If you are interested in how the tests are done, see [Understand the
 test cases](#understand-the-test-cases).
 
-The following tables provide links to the benchmark suites source code.
+The following tables provide links to the source code of benchmark suites.
 
 | List microbenchmark | In `taypsi/examples/list/list.tp` |
 | ------------------- | ----------- |
@@ -375,20 +417,20 @@ cabal run taype -- examples/tutorial/tutorial.tp
 ```
 
 This command will generate a few files in the `examples/tutorial` directory:
-- `tutorial.stage0.tpc`: Taypsi programs in administrative normal form, with
-  type annotations fully elaborated. However, the typed macros have not been
-  expanded, and the lifting procedure has not been invoked yet.
+- `tutorial.stage0.tpc`: Taypsi programs in administrative normal form (ANF),
+  with type annotations fully elaborated. However, the typed macros have not
+  been expanded, and the lifting procedure has not been invoked yet.
 - `tutorial.lifted.tpc`: lifted programs generated by the lifting algorithm.
   These programs still contain typed macros and type variables, corresponding to
   the "lifted functions with macros & type var." block in Fig. 13.
 - `tutorial.constraints.sexp`: constraints (Fig. 15) generated by the lifting
   algorithm, in S-expression format.
 - `tutorial.solver.input.sexp`: input to the constraint solver. The constraints
-  generated in the previous step have been lowered to formulas in the
-  qualifier-free finite domain theory.
+  generated in the previous step have been lowered to formulas in qualifier-free
+  finite domain theory.
 - `tutorial.solver.log`: constraint solver log. It prints out the formulas fed
   to Z3, statistics information collected by Z3, and each step that the
-  constraint solver algorithm has performed.
+  constraint solver algorithm has done.
 - `tutorial.solver.output.sexp`: output of the constraint solver. It consists of
   the type variable assignments for each lifted function.
 - `tutorial.stage1.tpc`: lifted programs with type variables instantiated. These
@@ -438,13 +480,16 @@ cabal run shake -- --help
 ## Understand the test cases
 
 Each of our test cases is implemented as a `test_<name>.ml` file, e.g.,
-`examples/tutorial/test_elem.ml`, which is compiled into an executable. These
+`examples/tutorial/test_elem.ml`, which is compiled to an executable. These
 executables take two arguments (driver and the participating party), and read
-inputs from `stdin`. Sample inputs are available for the tutorial example, and
+inputs from `stdin`. Sample input is available for the tutorial example, and
 we can run these executables through the `dune` build system for OCaml.
 
 ``` sh
-cd taypsi/examples/tutorial
+cd taypsi
+# Compile the tutorial example first
+cabal run shake -- build/tutorial
+cd examples/tutorial
 # Run the test case with the plaintext driver.
 # This driver only supports one party "trusted".
 dune exec ./test_elem.exe plaintext trusted < test_elem.input
@@ -493,3 +538,29 @@ machine, you can check out the `README.md` files under `taypsi` and
 `taype-drivers` directories. Alternatively, the docker file used to build this
 docker image is also available (`~/Dockerfile` in the docker container or on
 Zenodo).
+
+# Reusability Guide
+
+The Taypsi type checker and compiler (`~/taypsi`) and the Coq formalization of
+the Taypsi core calculus (`~/taypsi-theories`) should be evaluated for
+reusability.
+
+The tutorial example (`~/taypsi/examples/tutorial`) contains extensive comments
+on how to write Taypsi programs and oblivious types
+(`~/taypsi/examples/tutorial/tutorial.tp`), and on how to use the generated
+OCaml libraries (`~/taypsi/examples/tutorial/test_elem.ml`). You can play with
+this example by adding new functions, lifting functions against different
+policies, and implementing test cases for the generated private functions. You
+can also follow the larger examples (e.g., `dating` and `record`) and implement
+a new case study.
+
+The Coq formalization has inline documentation (`coqdoc`), and we can generate
+renderred documentation by running:
+
+```sh
+cd taypsi-theories
+make html
+```
+
+A pre-rendered, [online version of this
+documentation](https://ccyip.github.io/oadt/taypsi) is also available. 
