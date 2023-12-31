@@ -291,7 +291,8 @@ one presented in the paper:
 - The mechanization uses *locally nameless representation* for
   binders.
 - There are some notational differences which should be easy to disambiguate: we
-  use `case .. of ..` instead of `match .. with ..`, for example.
+  use `case .. of ..` instead of `match .. with ..`, and `mux` instead of `~if`
+  (oblivious conditional), for example.
 
 
 ## Reproduce the experimental results
