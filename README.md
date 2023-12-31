@@ -257,16 +257,20 @@ context`. These are generated from the file
 `taypsi-theories/theories/lang_taypsi/metatheories.v`, indicating that both of
 the key theorems have been proved without any axioms.
 
+You can also read the Coq formalization
+[online](https://ccyip.github.io/oadt/taypsi), with nicely rendered
+documentation.
+
 The following table summarizes the correspondence between the paper and the Coq
 formalization:
 
-| In paper | In artifact |
-| -------- | ----------- |
-| Fig. 4 | `expr`, `gdef`, `otval`, `oval` and `val` in `taypsi-theories/theories/lang_taypsi/syntax.v` |
-| Fig. 5 | `step` and `ectx` in `taypsi-theories/theories/lang_taypsi/semantics.v` |
-| Fig. 6 | `typing` and `kinding` in `taypsi-theories/theories/lang_taypsi/typing.v` |
-| Fig. 7 | `gdef_typing` in `taypsi-theories/theories/lang_taypsi/typing.v` |
-| Theorem 3.1 (Obliviousness) | `obliviousness` in `taypsi-theories/theories/lang_taypsi/metatheories.v` |
+| In paper | In artifact | Notations |
+| -------- | ----------- | --------- |
+| Fig. 4 | `expr`, `gdef`, `otval`, `oval` and `val` in `taypsi-theories/theories/lang_taypsi/syntax.v` | Defined in the `expr_notations` module in the same file |
+| Fig. 5 | `step` and `ectx` in `taypsi-theories/theories/lang_taypsi/semantics.v` | `e -->! e'` (or `Σ ⊨ e -->! e'`) for `step` |
+| Fig. 6 | `typing` and `kinding` in `taypsi-theories/theories/lang_taypsi/typing.v` | `Γ ⊢ e : τ` (or `Σ; Γ ⊢ e : τ`) for `typing` and `Γ ⊢ τ :: κ` (or `Σ; Γ ⊢ τ :: κ`) for `kinding` |
+| Fig. 7 | `gdef_typing` in `taypsi-theories/theories/lang_taypsi/typing.v` | `Σ ⊢₁ D` |
+| Theorem 3.1 (Obliviousness) | `obliviousness` in `taypsi-theories/theories/lang_taypsi/metatheories.v` | |
 
 The `soundness` theorem is also available in
 `taypsi-theories/theories/lang_taypsi/metatheories.v`.
