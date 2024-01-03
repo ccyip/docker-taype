@@ -17,14 +17,14 @@ This artifact supports the following claims made in the paper:
   with the baseline approach.
 - The compilation overhead introduced by Taypsi's lifting algorithm is
   reasonable.
-- The core calculus and proofs of soundness and oblivious have been
+- The core calculus and proofs of soundness and obliviousness have been
   mechanized in Coq.
-[Reproduce the experimental
-  results](#reproduce-the-experimental-results) explains how to
-  reproduce the experiments that support the first three
-  claims, and [Coq formalization of the core
-  calculus](#coq-formalization-of-the-core-calculus) gives
-  instructions on how to navigate the Coq mechanization.
+
+[Reproducing the experimental results](#reproducing-the-experimental-results)
+explains how to reproduce the experiments that support the first three claims,
+and [Coq formalization of the core
+calculus](#coq-formalization-of-the-core-calculus) gives instructions on how to
+navigate the Coq mechanization.
 
 # Hardware Dependencies
 
@@ -50,7 +50,7 @@ This artifact is a docker image, which contains:
   used in our evaluation, located at
   `~/taype-pldi`. This includes the additional benchmarks used in our comparison. ([Github
   repository](https://github.com/ccyip/taype/tree/tape))
-- An extended version of Taype that includes a version of Taypsi's
+- An extended version of Taype that includes Taypsi's
   smart array optimization, located at `~/taype-sa`. This version of
   Taype is used to provide a fairer comparison with Taypsi. Note that
   the results of this experiment are not in the current submission,
@@ -205,7 +205,7 @@ of Taype.
 | Fig. 15 | `Constraint` in `taypsi/src/Taype/Lift.hs` | |
 | Fig. 16 | `liftExpr` in `taypsi/src/Taype/Lift.hs` | |
 | Compilation and optimizations in Section 6 | Source code in `taypsi` and `taype-drivers` | See Note 2 |
-| Figures in Section 6 | See [Reproduce the experimental results](#reproduce-the-experimental-results) | |
+| Figures in Section 6 | See [Reproducing the experimental results](#reproducing-the-experimental-results) | |
 
 Notes:
 1. While the entry point of the lifting algorithm is `liftDefs` in
@@ -220,15 +220,14 @@ Notes:
    `taype-drivers/lib/smart.ml`. The reshape guard optimization is defined at
    `guardReshape` in `taypsi/src/Oil/Optimization.hs`. The memoization
    optimization is `memo` in `taypsi/src/Oil/Optimization.hs`. The driver used
-   in our evaluation is `taype-drivers/emp/taype_driver_emp.ml`. See also
-   [Understand the compilation pipeline](#understand-the-compilation-pipeline).
+   in our evaluation is `taype-drivers/emp/taype_driver_emp.ml`. See also [The
+   compilation pipeline](#the-compilation-pipeline).
 
- As the Taypsi syntax presented in the paper uses several typographic
-conventions (e.g., hat, math symbols, etc.), which cannot be easily
-reproduced in source code, the definitions in the artifact adopt a
-slightly different concrete syntax. The following table summarizes the
-syntactic and naming discrepancies between the Taypsi source code and
-the listings in the paper.
+As the Taypsi syntax presented in the paper uses several typographic conventions
+(e.g., hat, math symbols, etc.), which cannot be easily reproduced in source
+code, the definitions in the artifact adopt a slightly different concrete
+syntax. The following table summarizes the syntactic and naming discrepancies
+between the Taypsi source code and the listings in the paper.
 
 | In paper | In artifact | Comment |
 | -------- | ----------- | ------- |
@@ -304,7 +303,7 @@ one presented in the paper:
 ## Reproducing the experimental results
 
 To reproduce Figs. 17, 18 and 19 in the paper, you can simply invoke
-the a script to runs all our benchmarks.
+the script to runs all our benchmarks.
 
 ``` sh
 # At home directory '~'
@@ -346,20 +345,19 @@ for the appendix.
 
 Note that, compared to Fig. 17 in the submission,
 `taypsi/example/figs/list-bench-full.tex` and `tree-bench-full.tex` generate an
-extra column (Taype-SA), which reports the performance numbers of a version of
+extra column (Taype-SA), which reports the performance numbers of the version of
 Taype with smart array optimization. The column (Taypsi) also includes the
 percentage of running time relative to this version of Taype. The goal is to
 compare Taype (PLDI23) and Taypsi in a fairer way, by having comparable
 optimizations in both approaches to maximize their potential. This result will
 be included in the final version of the paper.
 
-The performance of our benchmarks can vary due to a number of factors,
-e.g. the specs of the underlying hardware, the cryptographic
-instructions supported by the CPU, and the overhead of running them in
-a docker container, so you will most likely not see the exact numbers
-reported in the paper. Nevertheless, you should observe similar comparative
-results: Taypsi performs significantly better than Taype on many
-benchmarks, while doing roughly as well on the remainder.
+The performance of our benchmarks can vary due to a number of factors, e.g., the
+specs of the underlying hardware, the cryptographic instructions supported by
+the CPU, and the overhead of running them in a docker container, so you will
+most likely not see the exact numbers reported in the paper. Nevertheless, you
+should observe similar comparative results: Taypsi performs significantly better
+than Taype on many benchmarks, while doing roughly as well on the remainder.
 
 For the additional column (Taype-SA), all benchmarks that fail in Taype should
 also fail in Taype-SA, except for `path_16`, and you should observe comparable
@@ -369,8 +367,8 @@ benchmark suites in Fig. 19 should be compiled under a few seconds (e.g.,
 K-means should take only 2 seconds now, instead of 12 seconds in the
 submission).
 
-If you are interested in how the tests are implemented, see
-[Implementation of test cases](#understand-the-test-cases).
+If you are interested in how the tests are implemented, see [The implementation
+of test cases](#the-implementation-of-test-cases).
 
 The following tables provide links to the source code of benchmark suites.
 
