@@ -200,24 +200,29 @@ of Taype.
 
 | In paper | In artifact | Comment |
 | -------- | ----------- | ------- |
-| Fig. 1 | `list` and `filter` in `taypsi/examples/tutorial/tutorial.tp` | |
+| Fig. 1 | `list` and `filter` in `taypsi/examples/tutorial/tutorial.tp` | See Note 1 |
 | Fig. 2 | `~list` and `~list_eq` in `taypsi/examples/tutorial/tutorial.tp` | |
 | Fig. 4 | `~list#s`, `~list#r`, `~list#view`, `~list#Nil`, `~list#Cons`, `~list#match`, `~list#join` and `~list#reshape` in `taypsi/examples/tutorial/tutorial.tp` | |
 | Figures and theorems in Section 3 | See [Coq formalization of the core calculus](#coq-formalization-of-the-core-calculus) | |
-| Fig. 14 | `liftDefs` in `taypsi/src/Taype/Lift.hs` | See Note 1 |
+| Fig. 14 | `liftDefs` in `taypsi/src/Taype/Lift.hs` | See Note 2 |
 | Fig. 15 | `Ppx` in `taypsi/src/Taype/Syntax.hs` and `elabPpx` in `taypsi/src/Taype/TypeChecker.hs` | Typed macros are called preprocessors (ppx) in source code |
 | Fig. 16 | `Constraint` in `taypsi/src/Taype/Lift.hs` | |
 | Fig. 17 | `liftExpr` in `taypsi/src/Taype/Lift.hs` | |
-| Compilation and optimizations in Section 6 | Source code in `taypsi` and `taype-drivers` | See Note 2 |
+| Compilation and optimizations in Section 6 | Source code in `taypsi` and `taype-drivers` | See Note 3 |
 | Figures in Section 6 | See [Reproducing the experimental results](#reproducing-the-experimental-results) | |
 
 Notes:
-1. While the entry point of the lifting algorithm is `liftDefs` in
+1. The Implementation distinguishes between oblivious product (whose components
+   must be oblivious) and normal product (whose components can be any types),
+   similar to Ye and Delaware (PLDI23). The style in the Taypsi paper is closer
+   to Ye and Delaware (POPL22), which includes only one product former that can
+   connect any types, for presentation purposes.
+2. While the entry point of the lifting algorithm is `liftDefs` in
    `taypsi/src/Taype/Lift.hs`, some subroutines are implemented in other files:
    the source of our constraint solver can be found in `taypsi/solver/bin/solver.ml` and
    `taypsi/solver/lib/solver.ml`, and the elaborator of typed macros
    is the `elabPpx` function in  `taypsi/src/Taype/TypeChecker.hs`.
-2. The source code of the bidirectional type checker is in
+3. The source code of the bidirectional type checker is in
    `taypsi/src/Taype/TypeChecker.hs`, the lifting procedure is in
    `taypsi/src/Taype/Lift.hs`, and the translation to OIL is in
    `taypsi/src/Oil/Translation.hs`. The smart array optimization is defined in
@@ -239,7 +244,7 @@ between the Taypsi source code and the listings in the paper.
 | `𝔹` | `bool` | Boolean type |
 | `ℤ` | `int` | Integer type |
 | `ℕ` | `uint` | Unsigned integer (natural number) type |
-| `×` | `*` | Product type former |
+| `×` | `*` or `~*` | Product type former and oblivious product type former |
 | `unsafe fn` | `fn'` | Keyword for defining unsafe functions, i.e. retractions |
 | Name with hat | Prefixed by `~` | e.g., `~list` for `list` with hat |
 | Primitive sections and retractions | `~bool#s`, `~bool#r`, `~int#s` and `~int#r` | |
@@ -288,17 +293,17 @@ The `soundness` theorem is also available in
 
 For simplicity, our mechanization of the core calculus differs slightly from the
 one presented in the paper:
-- The mechanization includes `fold` and `unfold` operations for recursive ADTs,
-  similar to Ye and Delaware (POPL22), instead of the ML-style ADTs in the
-  paper. The equivalence between these two styles is well-known (cf. Chapter 20
-  of "Types and Programming Languages").
-- The mechanization distinguishes between oblivious product (whose components
-  must be oblivious) and normal product (whose components can be any types),
-  similar to Ye and Delaware (PLDI23). The style in the Taypsi paper is closer
-  to Ye and Delaware (POPL22), which includes only one product former that can
-  connect any types, for presentation purposes.
-- The mechanization uses distinct projections for product and Ψ-type, while the
-  paper abuses the notation for presentation.
+- The mechanization includes `fold` and `unfold` operations for recursive ADTs
+  (`EFold` and `EUnfold` at `syntax.v`), similar to Ye and Delaware (POPL22),
+  instead of the ML-style ADTs in the paper. The equivalence between these two
+  styles is well-known (cf. Chapter 20 of "Types and Programming Languages").
+- Similar to the implementation, the mechanization includes oblivious product
+  and normal product (`EProd` at `syntax.v`, with an `olabel` argument to
+  distinguish them), while the paper has only one product type former for
+  presentation purposes.
+- The mechanization uses distinct projections for product and Ψ-type (`EProj`
+  and `EPsiProj` at `syntax.v`), while the paper abuses the notation for
+  presentation.
 - The mechanization uses *locally nameless representation* for
   binders.
 - There are some notational differences which should be easy to disambiguate: we
